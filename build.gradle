@@ -1,0 +1,29 @@
+apply plugin: 'java'
+
+group 'org.hl'
+version '1.0'
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+buildscript{
+    repositories{
+        mavenCentral()
+    }
+}
+
+dependencies {
+    compile 'cn.edu.hfut.dmic.webcollector:WebCollector:2.73-alpha'
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    //compile('org.springframework.boot:spring-boot-starter-web:2.0.0.RELEASE')
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+

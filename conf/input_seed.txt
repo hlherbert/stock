@@ -1,0 +1,5 @@
+# 要爬取和上传的淘宝商品的URL
+https://item.taobao.com/item.htm?id=574378898908
+https://item.taobao.com/item.htm?id=566374531994
+https://item.taobao.com/item.htm?id=561115473106
+https://item.taobao.com/item.htm?id=577486537533

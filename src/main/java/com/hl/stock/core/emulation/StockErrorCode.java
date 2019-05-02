@@ -13,7 +13,7 @@ import java.text.MessageFormat;
 public enum StockErrorCode {
     // common 10001-19999
     Unkown(10001, "Unkown"),
-    NotImplmented(10002, "NotImplemented"),
+    NotImplemented(10002, "NotImplemented"),
 
     // model 20001-29999
 

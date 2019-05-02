@@ -1,7 +1,6 @@
 package com.hl.stock.core.download;
 
 import com.hl.stock.common.exception.AppException;
-import com.hl.stock.common.exception.ErrorCode;
 import com.hl.stock.core.emulation.StockErrorCode;
 import com.hl.stock.core.model.StockData;
 import org.springframework.stereotype.Service;

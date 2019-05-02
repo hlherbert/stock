@@ -13,21 +13,21 @@ enum StockZone {
 ```
 
 * StockData 股票数据模型
-|日期|代码|开盘|收盘|涨跌额|涨跌幅|最低|最高|成交量(手)|成交金额(万)|换手率|
-|----|----|----|----|----|----|----|----|----|----|----|----|
-|0|1|2|3|4|5|6|7|8|9|10|
-date: Date
-code: String
-openPrice: double
-closePrice: double
-growPrice: double
-growPercent: double
-lowPrice: double
-highPrice: double
-amount: double
-amountMoney: double
-exchangePercent: double
 
+
+```
+date: Date      日期
+code: String    代码
+openPrice: double   开盘
+closePrice: double  收盘
+growPrice: double   涨跌额
+growPercent: double 涨跌幅
+lowPrice: double    最低
+highPrice: double   最高
+amount: double      成交量(手)
+amountMoney: double 成交金额(万)
+exchangePercent: double 换手率
+```
 
 ## 数据获取模块
 download

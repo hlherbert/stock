@@ -40,7 +40,7 @@ import javafx.stage.Stage;
 
 public class FxApp extends Application {
 
-    public static void main(String[] args) {
+    public static void startApp(String[] args) {
         launch(args);
     }
 

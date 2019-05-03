@@ -13,31 +13,31 @@ public class StockData {
     private String code;
 
     /** 开盘价 */
-    private double openPrice;
+    private Double openPrice;
 
     /** 收盘价 */
-    private double closePrice;
+    private Double closePrice;
 
     /** 涨跌额 */
-    private double growPrice;
+    private Double growPrice;
 
     /** 涨跌幅 */
-    private double growPercent;
+    private Double growPercent;
 
     /** 最低价 */
-    private double lowPrice;
+    private Double lowPrice;
 
     /** 最高价 */
-    private double highPrice;
+    private Double highPrice;
 
     /** 成交量(手) */
-    private int amount;
+    private Integer amount;
 
     /** 成交金额(万) */
-    private double amountMoney;
+    private Double amountMoney;
 
     /** 换手率 */
-    private double exchangePercent;
+    private Double exchangePercent;
 
     public Date getDate() {
         return date;
@@ -55,75 +55,75 @@ public class StockData {
         this.code = code;
     }
 
-    public double getOpenPrice() {
+    public Double getOpenPrice() {
         return openPrice;
     }
 
-    public void setOpenPrice(double openPrice) {
+    public void setOpenPrice(Double openPrice) {
         this.openPrice = openPrice;
     }
 
-    public double getClosePrice() {
+    public Double getClosePrice() {
         return closePrice;
     }
 
-    public void setClosePrice(double closePrice) {
+    public void setClosePrice(Double closePrice) {
         this.closePrice = closePrice;
     }
 
-    public double getGrowPrice() {
+    public Double getGrowPrice() {
         return growPrice;
     }
 
-    public void setGrowPrice(double growPrice) {
+    public void setGrowPrice(Double growPrice) {
         this.growPrice = growPrice;
     }
 
-    public double getGrowPercent() {
+    public Double getGrowPercent() {
         return growPercent;
     }
 
-    public void setGrowPercent(double growPercent) {
+    public void setGrowPercent(Double growPercent) {
         this.growPercent = growPercent;
     }
 
-    public double getLowPrice() {
+    public Double getLowPrice() {
         return lowPrice;
     }
 
-    public void setLowPrice(double lowPrice) {
+    public void setLowPrice(Double lowPrice) {
         this.lowPrice = lowPrice;
     }
 
-    public double getHighPrice() {
+    public Double getHighPrice() {
         return highPrice;
     }
 
-    public void setHighPrice(double highPrice) {
+    public void setHighPrice(Double highPrice) {
         this.highPrice = highPrice;
     }
 
-    public int getAmount() {
+    public Integer getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(Integer amount) {
         this.amount = amount;
     }
 
-    public double getAmountMoney() {
+    public Double getAmountMoney() {
         return amountMoney;
     }
 
-    public void setAmountMoney(double amountMoney) {
+    public void setAmountMoney(Double amountMoney) {
         this.amountMoney = amountMoney;
     }
 
-    public double getExchangePercent() {
+    public Double getExchangePercent() {
         return exchangePercent;
     }
 
-    public void setExchangePercent(double exchangePercent) {
+    public void setExchangePercent(Double exchangePercent) {
         this.exchangePercent = exchangePercent;
     }
 }

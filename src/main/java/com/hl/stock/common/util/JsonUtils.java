@@ -15,7 +15,7 @@ public class JsonUtils {
     protected static Gson createGson() {
         return new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .setDateFormat("yyyy-MM-dd hh:mm:ss")
+                .setDateFormat("yyyy-MM-dd HH:mm:ss")
                 .create();
     }
 

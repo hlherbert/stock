@@ -32,14 +32,14 @@
 
 package com.hl.stock.fx;
 
+import com.hl.stock.old.pipeline.CrawTaobaoUploadFxgPipeline;
+import com.hl.stock.old.pipeline.Pipeline;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
-import com.hl.stock.core.pipeline.CrawTaobaoUploadFxgPipeline;
-import com.hl.stock.core.pipeline.Pipeline;
 
 public class FxAppController {
     @FXML

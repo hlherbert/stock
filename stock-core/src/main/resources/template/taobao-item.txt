@@ -1,9 +1,0 @@
-taobaoUrl: ###taobaoUrl###
-id: ###id###
-标题-title: ###title###
-价格-price: ###price###
-淘宝价-pricePromote: ###pricePromote###
-库存-stock: ###stock###
-基本信息-basicInfo: ###basicInfo###
-详情-detailImgs: ###detailImgs###
-主规格图片-mainSpecPics:  ###mainSpecPics###

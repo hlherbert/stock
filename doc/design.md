@@ -1,5 +1,12 @@
 # stock程序设计
 
+## 包依赖
+
+model <-- data <-- download
+               <-- query
+               <-- analysis
+
+
 ## 数据模型模块
 model
 定义数据模型
@@ -11,6 +18,14 @@ enum StockZone {
     SHENZHEN
 }
 ```
+
+* StockMeta 股票元数据
+```
+code: String 代码
+name: String 名称
+zone: StockZone 交易所
+```
+
 
 * StockData 股票数据模型
 
@@ -36,11 +51,17 @@ download
 * StockDownloader 下载器
 ```
 class StockDownloader {
-    StockData[] download(code, startDate, endDate)
-    String[] downCodeList()
+    StockData[] downloadHistory(code, startDate, endDate) 下载股票历史数据
+    StockMeta[] downloadMeta() 下载所有股票元数据
 }
 ```
-
+* StockDownloadSaver 下载保存器(下载数据并保存到数据库中)
+```
+class StockDownloadSave {
+    downloadSaveHistory(String code, Date startDate, Date endDate)
+    downloadSaveMeta()
+}
+```
 
 ## 数据存储模块
 data
@@ -49,8 +70,11 @@ data
 * StockDao 股票数据存储操作对象
 ```
 class StockDao {
-    save(stockData)
-    StockData[] load(code, startDate, endDate)
+    saveData(stockData);
+    saveMeta(StockMeta stockMeta);
+
+    StockData[] loadData(code, startDate, endDate)
+    StockMeta[] loadMeta();
 }
 ```
 
@@ -82,7 +106,7 @@ class RangeCondition<T> implement Condition {
 * interface Query 查询
 ```
 interface Query {
-    List<Object> query(Collection<Object> data)
+    List<Object> query(Collection<Condition> data)
 }
 ```
 

@@ -68,25 +68,29 @@ class StockDownloaderCodeHelper {
         return meta;
     }
 
-    private List<StockMeta> loadShanghaiCodes() {
-        return loadCodes(ShanghaiCodeFile, StockZone.SHANGHAI);
+    private List<StockMeta> loadShanghaiMetas() {
+        return loadMetas(ShanghaiCodeFile, StockZone.SHANGHAI);
     }
 
-    private List<StockMeta> loadShenzhenCodes() {
-        return loadCodes(ShenzhenCodeFile, StockZone.SHENZHEN);
+    private List<StockMeta> loadShenzhenMetas() {
+        return loadMetas(ShenzhenCodeFile, StockZone.SHENZHEN);
     }
 
-    private List<StockMeta> loadCodes(String filename, StockZone zone) {
+    private List<StockMeta> loadMetas(String filename, StockZone zone) {
         List<StockMeta> metas = new ArrayList();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String stockNameCode = reader.readLine();
-            try {
-                StockMeta meta = extractMeta(stockNameCode, zone);
-                metas.add(meta);
-            } catch (AppException e) {
-                // 解析失败, 忽略
-                logger.warn("extract stock code fail,ignore.");
+            while (stockNameCode != null) {
+                try {
+                    StockMeta meta = extractMeta(stockNameCode, zone);
+                    metas.add(meta);
+                } catch (AppException e) {
+                    // 解析失败, 忽略
+                    logger.warn("extract stock code fail,ignore.");
+                }
+                stockNameCode = reader.readLine();
             }
+
         } catch (IOException e) {
             StockErrorCode.ExtractStockMetaFail.error();
         }
@@ -101,8 +105,8 @@ class StockDownloaderCodeHelper {
      */
     List<StockMeta> loadAllMeta() {
         List<StockMeta> metas = new ArrayList<>();
-        metas.addAll(loadShanghaiCodes());
-        metas.addAll(loadShenzhenCodes());
+        metas.addAll(loadShanghaiMetas());
+        metas.addAll(loadShenzhenMetas());
         return metas;
     }
 }

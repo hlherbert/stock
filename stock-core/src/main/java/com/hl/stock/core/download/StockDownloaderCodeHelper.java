@@ -20,13 +20,19 @@ import java.util.regex.Pattern;
  */
 class StockDownloaderCodeHelper {
 
-    /** 日志 */
+    /**
+     * 日志
+     */
     private static final Logger logger = LoggerFactory.getLogger(StockDownloaderCodeHelper.class);
 
-    /** 上海交易所A股编码 */
+    /**
+     * 上海交易所A股编码
+     */
     private final static String ShanghaiCodeFile = FileUtils.getResourceFilePath("/code/stockcode_shanghai.txt");
 
-    /** 深圳交易所A股编码 */
+    /**
+     * 深圳交易所A股编码
+     */
     private final static String ShenzhenCodeFile = FileUtils.getResourceFilePath("/code/stockcode_shenzhen.txt");
 
     private final static Pattern StockNameCodePattern = Pattern.compile("(.*)(\\((.*)\\))");
@@ -39,6 +45,7 @@ class StockDownloaderCodeHelper {
 
     /**
      * 解析出股票编码
+     *
      * @param stockNameCode 股票名(编码) - 例如: 沙河股份(000014)
      * @return 股票编码
      */

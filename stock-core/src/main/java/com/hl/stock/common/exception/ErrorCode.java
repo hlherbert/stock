@@ -10,16 +10,22 @@ import java.text.MessageFormat;
  */
 public class ErrorCode {
 
-    /** 日志 */
+    /**
+     * 日志
+     */
     private static final Logger logger = LoggerFactory.getLogger(ErrorCode.class);
 
-    /** 错误码 */
+    /**
+     * 错误码
+     */
     protected final int code;
 
-    /** 错误信息 */
+    /**
+     * 错误信息
+     */
     protected final String desc;
 
-    public ErrorCode(int code, String desc){
+    public ErrorCode(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }
@@ -33,7 +39,7 @@ public class ErrorCode {
     }
 
     public String getMsg() {
-        return MessageFormat.format("{0,number,#}: {1}",code,desc);
+        return MessageFormat.format("{0,number,#}: {1}", code, desc);
     }
 
     public void error() throws AppException {

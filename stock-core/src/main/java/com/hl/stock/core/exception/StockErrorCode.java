@@ -30,16 +30,22 @@ public enum StockErrorCode {
 
     // analysis 70001-79999
 
-    /** 日志 */
+    /**
+     * 日志
+     */
     private static final Logger logger = LoggerFactory.getLogger(StockErrorCode.class);
 
-    /** 错误码 */
+    /**
+     * 错误码
+     */
     protected final int code;
 
-    /** 错误信息 */
+    /**
+     * 错误信息
+     */
     protected final String desc;
 
-    StockErrorCode(int code, String desc){
+    StockErrorCode(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }

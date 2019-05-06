@@ -1,36 +1,49 @@
-plugins {
-    id 'org.springframework.boot' version '2.1.4.RELEASE'
-    id 'java'
-}
 
-apply plugin: 'io.spring.dependency-management'
 
 group 'org.hl'
-version '1.0'
-sourceCompatibility = '1.8'
+version '1.0-SNAPSHOT'
 
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    sourceCompatibility = 1.8
+
+    idea {
+        module {
+            inheritOutputDirs = true
+        }
+    }
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    // java编译的时候缺省状态下会因为中文字符而失败
+    [compileJava,compileTestJava,javadoc]*.options*.encoding = 'UTF-8'
+    
+    repositories {
+        mavenLocal()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven{ url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'}
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
+
+
+// 所有子项目的通用配置
+subprojects {
+    dependencies {
+        // 通用依赖
+
+        // 测试依赖
+        testCompile(
+                "junit:junit:4.12"
+        )
+    }
 }
-
-configurations {
-    // 避免slf4j和springboot冲突
-    all*.exclude group:'ch.qos.logback', module:'logback-classic'
-}
-
-dependencies {
-    compile 'cn.edu.hfut.dmic.webcollector:WebCollector:2.73-alpha'
-    compile 'com.squareup.retrofit2:retrofit:2.0.2'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
-    //compile 'org.springframework.boot:spring-boot-starter'
-    compile 'org.springframework.boot:spring-boot-starter-web'
-
-    testCompile 'junit:junit'
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
-}
-

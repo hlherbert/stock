@@ -6,37 +6,59 @@ import java.util.Date;
  * 股票天数据
  */
 public class StockData {
-    /** 日期 */
+    /**
+     * 日期
+     */
     private Date date;
 
-    /** 代码 */
+    /**
+     * 代码
+     */
     private String code;
 
-    /** 开盘价 */
+    /**
+     * 开盘价
+     */
     private Double openPrice;
 
-    /** 收盘价 */
+    /**
+     * 收盘价
+     */
     private Double closePrice;
 
-    /** 涨跌额 */
+    /**
+     * 涨跌额
+     */
     private Double growPrice;
 
-    /** 涨跌幅 */
+    /**
+     * 涨跌幅
+     */
     private Double growPercent;
 
-    /** 最低价 */
+    /**
+     * 最低价
+     */
     private Double lowPrice;
 
-    /** 最高价 */
+    /**
+     * 最高价
+     */
     private Double highPrice;
 
-    /** 成交量(手) */
+    /**
+     * 成交量(手)
+     */
     private Integer amount;
 
-    /** 成交金额(万) */
+    /**
+     * 成交金额(万)
+     */
     private Double amountMoney;
 
-    /** 换手率 */
+    /**
+     * 换手率
+     */
     private Double exchangePercent;
 
     public Date getDate() {

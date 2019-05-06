@@ -32,8 +32,6 @@
 
 package com.hl.stock.fx;
 
-import com.hl.stock.old.pipeline.CrawTaobaoUploadFxgPipeline;
-import com.hl.stock.old.pipeline.Pipeline;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -51,8 +49,6 @@ public class FxAppController {
     @FXML
     private ProgressBar prsCraw;
 
-    private Pipeline crawPipeline = new CrawTaobaoUploadFxgPipeline();
-
     public FxAppController() {
 
     }
@@ -69,7 +65,6 @@ public class FxAppController {
                     updateProgress(i + 1, 100);
                     updateMessage("Loading..." + (i + 1) + "%");
                 }
-                crawPipeline.doAllSteps();
                 for (int i = 50; i < 100; i++) {
                     Thread.sleep(50);
                     updateProgress(i + 1, 100);

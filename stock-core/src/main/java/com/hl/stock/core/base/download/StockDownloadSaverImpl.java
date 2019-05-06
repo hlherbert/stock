@@ -28,8 +28,6 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
     @Override
     public void downloadSaveMeta() {
         List<StockMeta> metas = stockDownloader.downloadMeta();
-        for (StockMeta m : metas) {
-            stockDao.saveMeta(m);
-        }
+        stockDao.saveMetaBatch(metas);
     }
 }

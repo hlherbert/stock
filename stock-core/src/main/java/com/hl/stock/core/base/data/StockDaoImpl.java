@@ -22,8 +22,18 @@ public class StockDaoImpl implements StockDao {
     }
 
     @Override
+    public void saveDataBatch(List<StockData> stockData) {
+        StockErrorCode.NotImplemented.error();
+    }
+
+    @Override
     public void saveMeta(StockMeta stockMeta) {
         stockMetaMapper.insert(stockMeta);
+    }
+
+    @Override
+    public void saveMetaBatch(List<StockMeta> stockMetas) {
+        stockMetaMapper.insertBatch(stockMetas);
     }
 
     @Override
@@ -34,7 +44,6 @@ public class StockDaoImpl implements StockDao {
 
     @Override
     public List<StockMeta> loadMeta() {
-        StockErrorCode.NotImplemented.error();
-        return null;
+        return stockMetaMapper.getAll();
     }
 }

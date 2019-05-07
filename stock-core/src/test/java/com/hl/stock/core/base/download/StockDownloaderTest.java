@@ -49,6 +49,6 @@ public class StockDownloaderTest {
     @Test
     public void downloadMeta() throws AppException {
         List<StockMeta> codeList = stockDownloader.downloadMeta();
-        System.out.println(JsonUtils.prettyJson(JsonUtils.toJson(codeList)));
+        System.out.println(JsonUtils.toPrettyJson(codeList));
     }
 }

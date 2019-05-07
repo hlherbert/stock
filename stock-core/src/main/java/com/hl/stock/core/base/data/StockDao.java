@@ -55,4 +55,13 @@ public interface StockDao {
      * @return
      */
     List<StockMeta> loadMeta();
+
+
+    /**
+     * 数据库中是否有股票数据
+     *
+     * @param code 股票代码
+     * @return true:有。false:没有
+     */
+    boolean hasData(String code);
 }

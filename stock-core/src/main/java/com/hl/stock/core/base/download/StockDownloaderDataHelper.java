@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -28,6 +29,7 @@ import java.util.List;
 /**
  * 下载器辅助类
  * 隐藏下载器内部实现
+ * 因为是非公开类，因此不支持spring自动注入, 必须使用instance()获取单例
  */
 class StockDownloaderDataHelper {
 
@@ -38,7 +40,10 @@ class StockDownloaderDataHelper {
 
     private static final StockDownloaderDataHelper instance = new StockDownloaderDataHelper();
 
-    // http://q.stock.sohu.com/hisHq?code=zs_000001&start=20000504&end=20151215&stat=1&order=D&period=d
+    /**
+     * 请求url的格式
+     * e.g. http://q.stock.sohu.com/hisHq?code=zs_000001&start=20000504&end=20151215&stat=1&order=D&period=d
+     */
     private static final String stockDataUrlTemplate = "http://q.stock.sohu.com/hisHq?code={0}&start={1}&end={2}&stat=1&order=D&period=d";
 
     private static final DateFormat dateFormat = new SimpleDateFormat(DateTimeUtils.yyyyMMdd);
@@ -83,6 +88,43 @@ class StockDownloaderDataHelper {
     }
 
     /**
+     * 如果超时，重试。
+     * 总共重试3次。间隔5,10,15秒
+     *
+     * @param request 请求
+     * @return
+     */
+    private String tryHttpCall(Request request) throws InterruptedException {
+        final int sleepTimeBaseSeconds = 5; // 首次重试等待时间
+        final int sleepTimeStepSeconds = 5; //每次重试等待时间的增量，重试等待时间越来越久
+        final int nRetry = 3; // 重试次数
+        final int MILLISECOND = 1000; // s -> ms
+
+        for (int i = 0; i < nRetry; i++) {
+            try {
+                Response resp = okHttpClient.newCall(request).execute();
+                if (resp == null) {
+                    return null;
+                }
+                String rstJson = resp.body().string();
+                return rstJson;
+            } catch (SocketTimeoutException e) {
+                // 请求超时，重试
+                StockErrorCode.DownloadStockDataTimeout.warn(e);
+                int sleepTimeSeconds = sleepTimeBaseSeconds + i * sleepTimeStepSeconds;
+                logger.warn("request Timeout. waiting {} seconds to retry...", sleepTimeSeconds);
+                Thread.sleep(sleepTimeSeconds * MILLISECOND);
+                logger.warn("retry now. {} {}", request.method(), request.url());
+            } catch (IOException e) {
+                StockErrorCode.DownloadStockDataFail.error(e);
+            }
+        }
+        StockErrorCode.DownloadStockDataTimeout.error();
+        return null;
+    }
+
+
+    /**
      * 下载搜狐股票的历史数据
      *
      * @return 历史股票数据
@@ -96,11 +138,7 @@ class StockDownloaderDataHelper {
 
         String rstJson = null;
         try {
-            Response resp = okHttpClient.newCall(request).execute();
-            if (resp == null) {
-                return emptyData;
-            }
-            rstJson = resp.body().string();
+            rstJson = tryHttpCall(request);
 
             // 成功获取到数据，返回值为数组
             SouhuHistoryHqs hqs = JsonUtils.fromJson(rstJson, SouhuHistoryHqs.class);
@@ -132,8 +170,6 @@ class StockDownloaderDataHelper {
                 stockDatas.add(stockData);
             }
             return stockDatas;
-        } catch (IOException e) {
-            StockErrorCode.DownloadStockDataFail.error(e);
         } catch (JsonSyntaxException e) {
             // 服务端返回失败，当传入的参数非法，例如code不存在时，就会返回不是一个数组{"status":2,"msg":"stock code non-existent"}
             // 获取数据失败，返回值为错误码
@@ -155,6 +191,8 @@ class StockDownloaderDataHelper {
                 logger.error("get stock history data fail. requestUrl: {} , reply: {}", url, rstJson);
                 StockErrorCode.DownloadStockDataFail.error(e);
             }
+        } catch (InterruptedException e) {
+            StockErrorCode.DownloadStockDataFail.error(e);
         }
 
         return emptyData;

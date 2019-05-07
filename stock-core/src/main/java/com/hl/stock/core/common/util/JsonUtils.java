@@ -67,7 +67,7 @@ public class JsonUtils {
      */
     public static String prettyJson(String json) {
         JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
-        return prettyGson.toJson(jsonObject);
+        JsonElement jsonElement = jsonParser.parse(json);
+        return prettyGson.toJson(jsonElement);
     }
 }

@@ -48,4 +48,9 @@ public class StockDaoImpl implements StockDao {
     public List<StockMeta> loadMeta() {
         return stockMetaMapper.getAll();
     }
+
+    @Override
+    public boolean hasData(String code) {
+        return stockDataMapper.hasSeries(code);
+    }
 }

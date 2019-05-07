@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Mapper
 public interface StockMetaMapper {
-    @Select("SELECT * FROM stock_meta")
+    @Select("SELECT * FROM stock_meta ORDER BY code ASC")
     @Results({
             @Result(property = "code", column = "code"),
             @Result(property = "name", column = "name"),

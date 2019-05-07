@@ -4,13 +4,12 @@ import com.hl.stock.core.base.exception.StockErrorCode;
 import com.hl.stock.core.base.model.StockMeta;
 import com.hl.stock.core.base.model.StockZone;
 import com.hl.stock.core.common.exception.AppException;
-import com.hl.stock.core.common.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,6 +18,7 @@ import java.util.regex.Pattern;
 /**
  * 下载器辅助类
  * 隐藏下载器内部实现
+ * 因为是非公开类，因此不支持spring自动注入, 必须使用instance()获取单例
  */
 class StockDownloaderCodeHelper {
 
@@ -28,14 +28,14 @@ class StockDownloaderCodeHelper {
     private static final Logger logger = LoggerFactory.getLogger(StockDownloaderCodeHelper.class);
 
     /**
-     * 上海交易所A股编码
+     * 上海交易所A股编码文件
      */
-    private final static String ShanghaiCodeFile = FileUtils.getResourceFilePath("/code/stockcode_shanghai.txt");
+    private final static String ShanghaiCodeFile = "/code/stockcode_shanghai.txt";
 
     /**
-     * 深圳交易所A股编码
+     * 深圳交易所A股编码文件
      */
-    private final static String ShenzhenCodeFile = FileUtils.getResourceFilePath("/code/stockcode_shenzhen.txt");
+    private final static String ShenzhenCodeFile = "/code/stockcode_shenzhen.txt";
 
     private final static Pattern StockNameCodePattern = Pattern.compile("(.*)(\\((.*)\\))");
 
@@ -77,8 +77,8 @@ class StockDownloaderCodeHelper {
     }
 
     private List<StockMeta> loadMetas(String filename, StockZone zone) {
-        List<StockMeta> metas = new ArrayList();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+        List<StockMeta> metas = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(filename)))) {
             String stockNameCode = reader.readLine();
             while (stockNameCode != null) {
                 try {
@@ -92,7 +92,7 @@ class StockDownloaderCodeHelper {
             }
 
         } catch (IOException e) {
-            StockErrorCode.ExtractStockMetaFail.error();
+            StockErrorCode.ExtractStockMetaFail.error(e);
         }
 
         return metas;

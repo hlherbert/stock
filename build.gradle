@@ -32,6 +32,11 @@ allprojects {
     dependencies {
         testCompile group: 'junit', name: 'junit', version: '4.12'
     }
+
+    // 编译: 代码静态检查，如果不通过则报错
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+    }
 }
 
 

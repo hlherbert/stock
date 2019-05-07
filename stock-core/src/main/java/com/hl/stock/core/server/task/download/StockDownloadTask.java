@@ -7,6 +7,7 @@ import com.hl.stock.core.base.model.StockMeta;
 import com.hl.stock.core.base.model.StockZone;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import com.hl.stock.core.common.util.PerformanceUtils;
+import com.hl.stock.core.common.util.SoundUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,9 @@ public class StockDownloadTask {
         }
         historyTaskStart = true;
 
+        // 发声通知
+        SoundUtils.beep();
+
         // 下载元数据
         PerformanceUtils.logTimeStart("downloadStockMetas");
         downloadAllStockMetas();
@@ -93,8 +97,14 @@ public class StockDownloadTask {
         }
         Date historyEndDate = new Date();
         for (StockMeta meta : stockMetas) {
-            downloadStockHistoryData(meta.getZone(), meta.getCode(), historyStartDate, historyEndDate);
-            PerformanceUtils.logTimeEnd("down stock data code=" + meta.getCode());
+            if (stockDao.hasData(meta.getCode())) {
+                // 如果已经下载过某只股票的数据了，就不要再下载了
+                logger.info("stock data already downloaded. code=" + meta.getCode());
+                continue;
+            } else {
+                downloadStockHistoryData(meta.getZone(), meta.getCode(), historyStartDate, historyEndDate);
+                PerformanceUtils.logTimeEnd("down stock data code=" + meta.getCode());
+            }
         }
         PerformanceUtils.logTimeEnd("downloadStockHistoryData");
     }

@@ -2,6 +2,7 @@ package com.hl.stock.core.base.exception;
 
 import com.hl.stock.core.common.exception.AppException;
 import com.hl.stock.core.common.exception.ErrorCode;
+import com.hl.stock.core.common.util.SoundUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,9 @@ public enum StockErrorCode {
 
     ParseStockStartDateFail(30004, "ParseStockStartDateFail"),  // 解析股票下载起始时间参数失败
 
-    DownloadStockCodeNotExists(30005, "DownloadStockCodeNotExists");        // 下载股票代码不存在(股票退市)
+    DownloadStockCodeNotExists(30005, "DownloadStockCodeNotExists"),        // 下载股票代码不存在(股票退市)
+
+    DownloadStockDataTimeout(30006, "DownloadStockDataTimeout"),            // 下载股票数据超时
 
     // data 40001-49999
 
@@ -33,6 +36,8 @@ public enum StockErrorCode {
     // emulation 60001-69999
 
     // analysis 70001-79999
+
+    ;
 
     /**
      * 日志
@@ -59,10 +64,12 @@ public enum StockErrorCode {
     }
 
     public void error() throws AppException {
+        SoundUtils.beep();//声音告警
         toErrorCode().error();
     }
 
     public void error(Throwable cause) throws AppException {
+        SoundUtils.beep();//声音告警
         toErrorCode().error(cause);
     }
 

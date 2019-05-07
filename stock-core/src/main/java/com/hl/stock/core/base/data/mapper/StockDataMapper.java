@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Mapper
 public interface StockDataMapper {
-    @Select("SELECT * FROM stock_data")
+    @Select("SELECT * FROM stock_data ORDER BY code ASC, date ASC")
     @Results({
             @Result(property = "date", column = "date", javaType = Date.class),
             @Result(property = "code", column = "code"),
@@ -27,17 +27,21 @@ public interface StockDataMapper {
     })
     List<StockData> getAll();
 
-    @Select("SELECT * FROM stock_data WHERE code = #{code}")
+    @Select("SELECT * FROM stock_data WHERE code = #{code} ORDER BY date ASC")
     @Results
     List<StockData> getSeries(String code);
 
-    @Select("SELECT * FROM stock_data WHERE code = #{code} AND date >= #{startDate} AND date < #{endDate}")
+    @Select("SELECT * FROM stock_data WHERE code = #{code} AND date >= #{startDate} AND date < #{endDate} ORDER BY date ASC")
     @Results
     List<StockData> getSeriesByTime(String code, Date startDate, Date endDate);
 
     @Select("SELECT * FROM stock_data WHERE code = #{code} AND date = #{date}")
     @Results
     StockData getPoint(String code, Date date);
+
+    @Select("SELECT EXISTS(SELECT 1 FROM stock_data WHERE code=#{code})")
+    @Results
+    boolean hasSeries(String code);
 
     // 避免重复插入 insert ignore into
     @Insert("INSERT IGNORE INTO " +

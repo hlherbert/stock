@@ -20,7 +20,11 @@ public enum StockErrorCode {
 
     DownloadStockDataFail(30002, "DownloadStockDataFail"),      // 下载股票数据失败
 
-    ConvertStockDataFail(30003, "ConvertStockDataFail");        // 转换股票数据失败
+    ConvertStockDataFail(30003, "ConvertStockDataFail"),        // 转换股票数据失败
+
+    ParseStockStartDateFail(30004, "ParseStockStartDateFail"),  // 解析股票下载起始时间参数失败
+
+    DownloadStockCodeNotExists(30005, "DownloadStockCodeNotExists");        // 下载股票代码不存在(股票退市)
 
     // data 40001-49999
 
@@ -60,5 +64,19 @@ public enum StockErrorCode {
 
     public void error(Throwable cause) throws AppException {
         toErrorCode().error(cause);
+    }
+
+    /**
+     * 告警但不抛出异常
+     */
+    public void warn() {
+        toErrorCode().warn();
+    }
+
+    /**
+     * 告警但不抛出异常
+     */
+    public void warn(Throwable cause) {
+        toErrorCode().warn(cause);
     }
 }

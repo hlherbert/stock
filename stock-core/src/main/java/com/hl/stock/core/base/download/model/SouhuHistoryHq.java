@@ -10,8 +10,19 @@ import java.util.List;
  */
 public class SouhuHistoryHq {
 
+    /**
+     * 状态码:
+     * 0 - OK
+     * 2 - stock code non-existent
+     */
     @SerializedName("status")
     private int status;
+
+    /**
+     * 消息，例如 stock code non-existent
+     */
+    @SerializedName("msg")
+    private String msg;
 
     @SerializedName("code")
     private String code;
@@ -28,6 +39,14 @@ public class SouhuHistoryHq {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public String getCode() {

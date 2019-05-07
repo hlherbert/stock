@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -18,7 +19,7 @@ public class PerformanceUtils {
     /**
      * 2017-01-01 12:03:04
      */
-    private static final DateFormat dateFormat = DateFormat.getDateTimeInstance();
+    private static final DateFormat dateFormat = new SimpleDateFormat(DateTimeUtils.yyyy_MM_dd_HH_mm_ss);
 
     /**
      * 记录起始时间
@@ -26,7 +27,7 @@ public class PerformanceUtils {
      * @param event 事件名称
      */
     public static void logTimeStart(String event) {
-        logger.info("Start event:{}, time:{})", event, dateFormat.format(new Date()));
+        logger.info("(Start - {} - {})", event, dateFormat.format(new Date()));
     }
 
     /**
@@ -35,6 +36,6 @@ public class PerformanceUtils {
      * @param event 事件名称
      */
     public static void logTimeEnd(String event) {
-        logger.info("End event:{}, time:{})", event, dateFormat.format(new Date()));
+        logger.info("(End - {} - {})", event, dateFormat.format(new Date()));
     }
 }

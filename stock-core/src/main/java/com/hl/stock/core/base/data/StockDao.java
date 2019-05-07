@@ -20,9 +20,9 @@ public interface StockDao {
     /**
      * 批量保存股票数据
      *
-     * @param stockData
+     * @param stockDatas
      */
-    void saveDataBatch(List<StockData> stockData);
+    void saveDataBatch(List<StockData> stockDatas);
 
 
     /**

@@ -51,4 +51,18 @@ public class ErrorCode {
         logger.error(this.getMsg(), cause);
         throw new AppException(this, cause);
     }
+
+    /**
+     * 告警但不抛出异常
+     */
+    public void warn() {
+        logger.warn(this.getMsg());
+    }
+
+    /**
+     * 告警但不抛出异常
+     */
+    public void warn(Throwable cause) {
+        logger.warn(this.getMsg(), cause);
+    }
 }

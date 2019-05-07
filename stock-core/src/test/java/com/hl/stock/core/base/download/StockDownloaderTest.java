@@ -1,6 +1,8 @@
 package com.hl.stock.core.base.download;
 
 import com.hl.stock.core.base.model.StockData;
+import com.hl.stock.core.base.model.StockMeta;
+import com.hl.stock.core.base.model.StockZone;
 import com.hl.stock.core.common.exception.AppException;
 import com.hl.stock.core.common.util.JsonUtils;
 import org.junit.Test;
@@ -24,7 +26,7 @@ public class StockDownloaderTest {
 
     @Test
     public void download() throws AppException {
-        String code = "zs_000001";
+        String code = "000001";
         Calendar calendarStart = Calendar.getInstance();
         calendarStart.set(2000, 1, 1, 0, 0, 0);
 
@@ -34,8 +36,8 @@ public class StockDownloaderTest {
         Date startDate = calendarStart.getTime();
         Date endDate = calendarEnd.getTime();
 
-        List<StockData> stockDatum = stockDownloader.downloadHistory(code, startDate, endDate);
-        String str = JsonUtils.toPrettyJson(stockDatum);
+        List<StockData> stockDatas = stockDownloader.downloadHistory(StockZone.SHENZHEN, code, startDate, endDate);
+        String str = JsonUtils.toPrettyJson(stockDatas);
         //System.out.println(str);
         try (FileWriter writer = new FileWriter("out/testStockData.json")) {
             writer.write(str);
@@ -45,8 +47,8 @@ public class StockDownloaderTest {
     }
 
     @Test
-    public void downCodeList() throws AppException {
-        List<String> codeList = stockDownloader.downCodeList();
-        System.out.println(codeList);
+    public void downloadMeta() throws AppException {
+        List<StockMeta> codeList = stockDownloader.downloadMeta();
+        System.out.println(JsonUtils.prettyJson(JsonUtils.toJson(codeList)));
     }
 }

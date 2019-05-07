@@ -1,7 +1,7 @@
 package com.hl.stock.core.base.data;
 
+import com.hl.stock.core.base.data.mapper.StockDataMapper;
 import com.hl.stock.core.base.data.mapper.StockMetaMapper;
-import com.hl.stock.core.base.exception.StockErrorCode;
 import com.hl.stock.core.base.model.StockData;
 import com.hl.stock.core.base.model.StockMeta;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +16,17 @@ public class StockDaoImpl implements StockDao {
     @Autowired
     private StockMetaMapper stockMetaMapper;
 
+    @Autowired
+    private StockDataMapper stockDataMapper;
+
     @Override
     public void saveData(StockData stockData) {
-        StockErrorCode.NotImplemented.error();
+        stockDataMapper.insert(stockData);
     }
 
     @Override
-    public void saveDataBatch(List<StockData> stockData) {
-        StockErrorCode.NotImplemented.error();
+    public void saveDataBatch(List<StockData> stockDatas) {
+        stockDataMapper.insertBatch(stockDatas);
     }
 
     @Override
@@ -38,8 +41,7 @@ public class StockDaoImpl implements StockDao {
 
     @Override
     public List<StockData> loadData(String code, Date startDate, Date endDate) {
-        StockErrorCode.NotImplemented.error();
-        return null;
+        return stockDataMapper.getSeriesByTime(code, startDate, endDate);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.hl.stock.core.base.download.model;
 
+import com.hl.stock.core.common.util.DateTimeUtils;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,7 +24,7 @@ public class SouhuHistoryHqHq extends ArrayList<String> {
     public static final int COL_AMOUNT_MONEY = 8; // 成交金额(万)
     public static final int COL_EXCHANGE = 9; // 换手率 %
 
-    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static final DateFormat dateFormat = new SimpleDateFormat(DateTimeUtils.yyyy_MM_dd);
 
     private static Double parseStockDouble(String str) {
         if (str == null || str.isEmpty()) {

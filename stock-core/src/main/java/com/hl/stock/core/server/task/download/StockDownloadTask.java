@@ -7,7 +7,6 @@ import com.hl.stock.core.base.model.StockMeta;
 import com.hl.stock.core.base.model.StockZone;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import com.hl.stock.core.common.util.PerformanceUtils;
-import com.hl.stock.core.common.util.SoundUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +47,9 @@ public class StockDownloadTask {
     @Value("${stock.task.StockDownloadTask.downloadAllStockHistoryData.startDate}")
     private String historyStartDateStr;
 
+    @Value("${stock.task.StockDownloadTask.downloadAllStockHistoryData.delayPerStock}")
+    private int delayPerStock;
+
     /**
      * 日期属性格式
      */
@@ -83,9 +85,6 @@ public class StockDownloadTask {
         }
         historyTaskStart = true;
 
-        // 发声通知
-        SoundUtils.beep();
-
         // 下载元数据
         PerformanceUtils.logTimeStart("downloadStockMetas");
         downloadAllStockMetas();
@@ -114,17 +113,18 @@ public class StockDownloadTask {
                         // 如果已经下载过某只股票的数据了，就不要再下载了
                         logger.info("stock data already downloaded. code=" + meta.getCode());
                     } else {
-                        downloadStockHistoryData(meta.getZone(), meta.getCode(), historyStartDateFinal, historyEndDate);
-                        PerformanceUtils.logTimeEnd("down stock data code=" + meta.getCode());
+                        try {
+                            Thread.sleep(delayPerStock);
+                            downloadStockHistoryData(meta.getZone(), meta.getCode(), historyStartDateFinal, historyEndDate);
+                            PerformanceUtils.logTimeEnd("down stock data code=" + meta.getCode());
+                        } catch (InterruptedException e) {
+                            logger.error("thread interrupted.", e);
+                        }
                     }
                 }
             });
-            futures.add(future);
-        }
 
-        // 阻塞到所有任务完成
-        for (Future<?> future : futures) {
-            future.get();
+            futures.add(future);
         }
 
         PerformanceUtils.logTimeEnd("downloadStockHistoryData");

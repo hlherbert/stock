@@ -46,7 +46,7 @@ public class SoundUtils {
      */
     public static void beep() {
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 3; i++) {
                 tone(1000, 1 * 1000);
                 Thread.sleep(1000);
             }

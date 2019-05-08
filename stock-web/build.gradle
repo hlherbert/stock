@@ -1,11 +1,17 @@
 plugins {
+    id 'org.springframework.boot' version '2.1.4.RELEASE'
     id 'java'
 }
 
+apply plugin: 'io.spring.dependency-management'
+
 group 'org.hl'
 version '1.0-SNAPSHOT'
+sourceCompatibility = '1.8'
 
-sourceCompatibility = 1.8
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
 
 repositories {
     mavenLocal()
@@ -15,5 +21,6 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'org.springframework.boot:spring-boot-starter-web'
 }
+

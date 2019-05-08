@@ -1,16 +1,28 @@
 package com.hl.stock.core.base.download;
 
 import com.hl.stock.core.base.data.StockDao;
+import com.hl.stock.core.base.exception.StockErrorCode;
+import com.hl.stock.core.base.i18n.StockMessage;
 import com.hl.stock.core.base.model.StockData;
 import com.hl.stock.core.base.model.StockMeta;
 import com.hl.stock.core.base.model.StockZone;
+import com.hl.stock.core.common.util.DateTimeUtils;
+import com.hl.stock.core.common.util.PerformanceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Service
 public class StockDownloadSaverImpl implements StockDownloadSaver {
@@ -22,6 +34,35 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
 
     @Autowired
     private StockDownloader stockDownloader;
+
+    /**
+     * 下载数据的起始时间
+     */
+    @Value("${stock.task.StockDownloadTask.downloadAllStockHistoryData.startDate}")
+    private String historyStartDateStr;
+
+    /**
+     * 日期属性格式
+     */
+    private DateFormat dateFormat = new SimpleDateFormat(DateTimeUtils.yyyy_MM_dd);
+
+    /**
+     * 重试间隔时间
+     */
+    @Value("${stock.task.StockDownloadTask.downloadAllStockHistoryData.delayPerStock}")
+    private int delayPerStock;
+
+    @Override
+    public void downloadSaveMeta() {
+        List<StockMeta> metas = stockDownloader.downloadMeta();
+        if (metas == null || metas.isEmpty()) {
+            // do nothing
+            logger.warn("download all stock meta empty.");
+            return;
+        }
+        stockDao.saveMetaBatch(metas);
+    }
+
 
     @Override
     public void downloadSaveHistory(StockZone zone, String code, Date startDate, Date endDate) {
@@ -35,13 +76,49 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
     }
 
     @Override
-    public void downloadSaveMeta() {
-        List<StockMeta> metas = stockDownloader.downloadMeta();
-        if (metas == null || metas.isEmpty()) {
-            // do nothing
-            logger.warn("download all stock meta empty.");
-            return;
+    public void downloadAllStockHistoryData() {
+        // 下载元数据
+        PerformanceUtils.logTimeStart(StockMessage.DownloadAllStockMeta.toString());
+        downloadSaveMeta();
+        PerformanceUtils.logTimeEnd(StockMessage.DownloadAllStockMeta.toString());
+
+        // 下载股票数据
+        PerformanceUtils.logTimeStart(StockMessage.DownloadAllStockHistoryData.toString());
+        List<StockMeta> stockMetas = stockDao.loadMeta();
+        Date historyStartDate = null;
+        try {
+            historyStartDate = dateFormat.parse(historyStartDateStr);
+        } catch (ParseException e) {
+            StockErrorCode.ParseStockStartDateFail.error(e);
         }
-        stockDao.saveMetaBatch(metas);
+        final Date historyStartDateFinal = historyStartDate;
+        final Date historyEndDate = new Date();
+
+        // 多线程干活，提高性能。 同时并发下载多只股票的数据
+        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        List<Future<?>> futures = new ArrayList<Future<?>>();
+        for (StockMeta meta : stockMetas) {
+            Future<?> future = fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    if (stockDao.hasData(meta.getCode())) {
+                        // 如果已经下载过某只股票的数据了，就不要再下载了
+                        logger.info("stock data already downloaded. code=" + meta.getCode());
+                    } else {
+                        try {
+                            Thread.sleep(delayPerStock);
+                            downloadSaveHistory(meta.getZone(), meta.getCode(), historyStartDateFinal, historyEndDate);
+                            PerformanceUtils.logTimeEnd("down stock data code=" + meta.getCode());
+                        } catch (InterruptedException e) {
+                            logger.error("thread interrupted.", e);
+                        }
+                    }
+                }
+            });
+
+            futures.add(future);
+        }
+
+        PerformanceUtils.logTimeEnd(StockMessage.DownloadAllStockHistoryData.toString());
     }
 }

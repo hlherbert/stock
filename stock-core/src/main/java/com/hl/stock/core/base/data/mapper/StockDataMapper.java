@@ -33,7 +33,7 @@ public interface StockDataMapper {
 
     @Select("SELECT * FROM stock_data WHERE code = #{code} AND date >= #{startDate} AND date < #{endDate} ORDER BY date ASC")
     @Results
-    List<StockData> getSeriesByTime(String code, Date startDate, Date endDate);
+    List<StockData> getSeriesByTime(@Param("code") String code, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     @Select("SELECT * FROM stock_data WHERE code = #{code} AND date = #{date}")
     @Results

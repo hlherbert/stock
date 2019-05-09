@@ -81,20 +81,14 @@ class StockDao {
 ```
 
 
-## 查询模块
-query
-定义筛选条件，筛选查询符合条件的股票。
-* StockQuery
-
-
+## 分析模块
+analysis
+模拟指定在某日buyDay购入某股stockCode，另一日sellDay卖出，计算平均每日收益benifitDay。
+指定选股策略，使用策略在历史数据中模拟交易，给策略评分。
+找出最优策略。
 
 ## 仿真模块
 emulation
-模拟指定在某日buyDay购入某股stockCode，另一日sellDay卖出，计算平均每日收益benifitDay。
+实验性的各种策略交易，评估效果
 
 
-
-## 分析模块
-analysis
-指定选股策略，使用策略在历史数据中模拟交易，给策略评分。
-找出最优策略。

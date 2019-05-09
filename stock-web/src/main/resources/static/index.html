@@ -1,21 +1,47 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
     <meta charset="utf-8">
     <title>股票分析平台主页</title>
     <!-- 引入 echarts.js -->
+    <!--
     <script src="lib/jquery/jquery-3.4.1.js" type="text/javascript"></script>
     <script src="lib/echarts/echarts.js" type="text/javascript"></script>
+    -->
+    <script async src="scripts/lib/jquery/jquery-3.4.1.js" type="javascript"></script>
+    <script async src="scripts/lib/echarts/echarts.js" type="javascript"></script>
+    <script async src="scripts/main.js"></script>
+    <script async src="scripts/test.js"></script>
+
+    <link href="https://fonts.font.im/css?family=Open+Sans" rel="stylesheet" type="text/css">
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
 </head>
+
 <body>
-<script src="scripts/test.js" type="text/javascript"></script>
+<button>切换用户</button>
+<!-- script src="scripts/test.js" type="text/javascript"></script -->
+<h1>股市分析平台</h1>
 <h1>股市分析平台</h1>
 
 <h2>实验区</h2>
+<img alt="主页背景图: 股票面板" height="100" src="images/background.jpg" width="100">
 <p>我的猫咪脾气<strong>爆</strong>:)</p>
-<img alt="主页背景图: 股票面板" src="images/background.jpg">
+<p>Moizila 是一个实验平台，这里聚集来自五湖四海的</p>
+<ul>
+    <li>技术人员</li>
+    <li>思考者</li>
+    <li>建造者</li>
+</ul>
+<p>我们致力于...</p>
+<p>为了达成我们的共同理想，我们遵循一系列价值和理念，请参阅
+    <a href="https://www.mozilla.org/zh-CN/about/manifesto/">Mozilla宣言</a>
+</p>
+
+
 <h2>展示区</h2>
 <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-<div id="main" style="width: 600px;height:400px;"></div>
+<div id="chart" style="width: 600px;height:400px;"></div>
 </body>
+
 </html>

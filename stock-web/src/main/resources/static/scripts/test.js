@@ -1,4 +1,7 @@
-var myChart = echarts.init(document.getElementById('main'));
+import {echarts} from 'echarts';
+import {jQuery} from 'jquery-3.4.1'
+
+let myChart = echarts.init(document.querySelector('#chart'));
 // 显示标题，图例和空的坐标轴
 myChart.setOption({
     title: {
@@ -20,7 +23,7 @@ myChart.setOption({
 });
 
 // 异步加载数据
-var url = "localhost:8080/stock/data?code=603999&start=20100101&end=20190508";
+let url = "localhost:8081/stock/data?code=603999&start=20100101&end=20190508";
 jQuery.get('data.json').done(function (data) {
     // 填入数据
     myChart.setOption({

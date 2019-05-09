@@ -39,4 +39,5 @@ nativebuild/
 *.iml
 *.ipr
 out/
-taobaoCraw/
+
+.vscode

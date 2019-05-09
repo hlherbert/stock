@@ -30,4 +30,10 @@ public interface StockDownloadSaver {
      */
     void downloadAllStockHistoryData();
 
+
+    /**
+     * 补录所有股票历史数据（从该股票已有的最后一天数据时间到今天）
+     */
+    void complementAllStockHistoryData();
+
 }

@@ -60,6 +60,8 @@ class StockDownloader {
 class StockDownloadSave {
     downloadSaveHistory(String code, Date startDate, Date endDate)
     downloadSaveMeta()
+    downloadAllHistoryData()    下载所有股票历史数据
+    complementAllHistoryData()  补录所有股票历史数据
 }
 ```
 
@@ -82,49 +84,7 @@ class StockDao {
 ## 查询模块
 query
 定义筛选条件，筛选查询符合条件的股票。
-
-* interface Condition 条件
-```
-interface Condition {
-    boolean match(Object src) 是否符合条件
-}
-```
-
-* RangeCondition<T> implement Condition 范围条件
-```
-class RangeCondition<T> implement Condition {
-    T a; // 最小值
-    T b; // 最大值
-}
-
-如果a==null, b==null, 不限制
-如果a!=null, b!=null, a<=x<=b,
-如果a==null, b!=null, x<=b
-如果a!=null, b==null, x>=a
-```
-
-* interface Query 查询
-```
-interface Query {
-    List<Object> query(Collection<Condition> data)
-}
-```
-
-* abstract AbstractQuery implements Query 抽象查询
-```
-abstract class AbstractQuery implements Query {
-    Map<String, Condition> conditionMap;
-
-    void put(field, condition);
-    Condition get(field);
-    void remove(field);
-    List<Condition> getConditions();
-    List<Object> query(Collection<Object> data);
-}
-
-```
-
-* StockQuery extends AbstractQuery
+* StockQuery
 
 
 

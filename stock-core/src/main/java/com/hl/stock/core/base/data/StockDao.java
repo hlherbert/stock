@@ -64,4 +64,12 @@ public interface StockDao {
      * @return true:有。false:没有
      */
     boolean hasData(String code);
+
+    /**
+     * 某只股票数据中的最后一天
+     *
+     * @param code 股票代码
+     * @return 该股票历史数据中的最后日期. 如果未查到该股票数据，则返回null
+     */
+    Date lastDateOfData(String code);
 }

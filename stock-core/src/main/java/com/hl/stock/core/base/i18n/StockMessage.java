@@ -8,6 +8,13 @@ import java.util.Locale;
 public enum StockMessage {
     DownloadAllStockMeta("下载所有股票代码"),
     DownloadAllStockHistoryData("下载所有股票历史数据"),
+    ComplementStockHistoryData("补录股票历史数据"),
+    ComplementAllStockHistoryData("补录所有股票历史数据"),
+
+    DownloadAllStockHistoryDataTaskEnabled("任务已启用：自动下载所有股票历史数据"),
+    DownloadAllStockHistoryDataTaskDisabled("任务已禁用：自动下载所有股票历史数据"),
+    ComplementAllStockHistoryDataTaskEnabled("任务已启用：自动补录所有股票历史数据"),
+    ComplementAllStockHistoryDataTaskDisabled("任务已禁用：自动补录所有股票历史数据"),
 
     ;
 

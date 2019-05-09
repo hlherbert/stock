@@ -53,4 +53,9 @@ public class StockDaoImpl implements StockDao {
     public boolean hasData(String code) {
         return stockDataMapper.hasSeries(code);
     }
+
+    @Override
+    public Date lastDateOfData(String code) {
+        return stockDataMapper.lastDateOfSeries(code);
+    }
 }

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -85,13 +86,7 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
         // 下载股票数据
         PerformanceUtils.logTimeStart(StockMessage.DownloadAllStockHistoryData.toString());
         List<StockMeta> stockMetas = stockDao.loadMeta();
-        Date historyStartDate = null;
-        try {
-            historyStartDate = dateFormat.parse(historyStartDateStr);
-        } catch (ParseException e) {
-            StockErrorCode.ParseStockStartDateFail.error(e);
-        }
-        final Date historyStartDateFinal = historyStartDate;
+        final Date historyStartDateFinal = getDefaultHistoryStartDate();
         final Date historyEndDate = new Date();
 
         // 多线程干活，提高性能。 同时并发下载多只股票的数据
@@ -120,5 +115,68 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
         }
 
         PerformanceUtils.logTimeEnd(StockMessage.DownloadAllStockHistoryData.toString());
+    }
+
+    /**
+     * 从配置中加载默认的下载开始时间
+     *
+     * @return 默认的下载开始时间
+     */
+    private Date getDefaultHistoryStartDate() {
+        Date historyStartDate = null;
+        try {
+            historyStartDate = dateFormat.parse(historyStartDateStr);
+        } catch (ParseException e) {
+            StockErrorCode.ParseStockStartDateFail.error(e);
+        }
+        return historyStartDate;
+    }
+
+    @Override
+    public void complementAllStockHistoryData() {
+        // 下载元数据
+        PerformanceUtils.logTimeStart(StockMessage.DownloadAllStockMeta.toString());
+        downloadSaveMeta();
+        PerformanceUtils.logTimeEnd(StockMessage.DownloadAllStockMeta.toString());
+
+        // 下载股票数据
+        PerformanceUtils.logTimeStart(StockMessage.ComplementAllStockHistoryData.toString());
+        List<StockMeta> stockMetas = stockDao.loadMeta();
+
+        final Date historyStartDateFinal = getDefaultHistoryStartDate();
+        final Date historyEndDate = new Date();
+
+        // 多线程干活，提高性能。 同时并发下载多只股票的数据
+        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        List<Future<?>> futures = new ArrayList<Future<?>>();
+        for (StockMeta meta : stockMetas) {
+            Future<?> future = fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    // 获取改股票最后一天数据时间
+                    String code = meta.getCode();
+                    Date lastDate = stockDao.lastDateOfData(code);
+
+                    // 如果从数据库里没有查到该股票的最后一天数据，则起始时间设置为配置中的数据开始时间
+                    if (lastDate == null) {
+                        lastDate = historyStartDateFinal;
+                    }
+
+                    // 下载从lastDate到histroyEndDate的日期的数据
+                    try {
+                        Thread.sleep(delayPerStock);
+                        downloadSaveHistory(meta.getZone(), meta.getCode(), lastDate, historyEndDate);
+                        PerformanceUtils.logTimeEnd(MessageFormat.format("{0}. code={1}， start={2}, end={3}",
+                                StockMessage.ComplementStockHistoryData, code, lastDate, historyEndDate));
+                    } catch (InterruptedException e) {
+                        logger.error("thread interrupted.", e);
+                    }
+                }
+            });
+
+            futures.add(future);
+        }
+
+        PerformanceUtils.logTimeEnd(StockMessage.ComplementAllStockHistoryData.toString());
     }
 }

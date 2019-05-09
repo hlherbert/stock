@@ -116,6 +116,7 @@ class StockDownloaderDataHelper {
                 Thread.sleep(sleepTimeSeconds * MILLISECOND);
                 logger.warn("retry now. {} {}", request.method(), request.url());
             } catch (IOException e) {
+                logger.error("io exception. {} {}", request.method(), request.url());
                 StockErrorCode.DownloadStockDataFail.error(e);
             }
         }
@@ -139,6 +140,12 @@ class StockDownloaderDataHelper {
         String rstJson = null;
         try {
             rstJson = tryHttpCall(request);
+
+            if (null == rstJson || "".equals(rstJson) || rstJson.startsWith("{}")) {
+                // 无数据的情况，直接返回。
+                logger.warn("response stock data is empty, ignore. requestUrl: {} , reply: {}", url, rstJson);
+                return emptyData;
+            }
 
             // 成功获取到数据，返回值为数组
             SouhuHistoryHqs hqs = JsonUtils.fromJson(rstJson, SouhuHistoryHqs.class);
@@ -178,20 +185,23 @@ class StockDownloaderDataHelper {
                 // 如果错误码为2-stock code不存在，则忽略该错误
                 SouhuHistoryHq errData = JsonUtils.fromJson(rstJson, SouhuHistoryHq.class);
                 errStatus = errData.getStatus();
+                if (errStatus == SouhuHistoryHqStatus.NonExistent.getCode()) {
+                    // 如果股票不存在，忽略
+                    logger.warn("down stock code not exists. requestUrl: {} , reply: {}", url, rstJson);
+                    StockErrorCode.DownloadStockCodeNotExists.warn();
+                } else {
+                    // 其他错误，终止
+                    logger.error("get stock history data fail. requestUrl: {} , reply: {}", url, rstJson);
+                    StockErrorCode.DownloadStockDataFail.error(e);
+                }
             } catch (Exception e1) {
                 // do nothing
-            }
-
-            if (errStatus == SouhuHistoryHqStatus.NonExistent.getCode()) {
-                // 如果股票不存在，忽略
-                logger.warn("down stock code not exists. requestUrl: {} , reply: {}", url, rstJson);
-                StockErrorCode.DownloadStockCodeNotExists.warn();
-            } else {
                 // 其他错误，终止
                 logger.error("get stock history data fail. requestUrl: {} , reply: {}", url, rstJson);
-                StockErrorCode.DownloadStockDataFail.error(e);
+                StockErrorCode.DownloadStockDataFail.error(e1);
             }
         } catch (InterruptedException e) {
+            logger.error("download stock data interrupt. requestUrl: {} , reply: {}", url, rstJson);
             StockErrorCode.DownloadStockDataFail.error(e);
         }
 

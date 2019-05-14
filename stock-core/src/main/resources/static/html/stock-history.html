@@ -22,16 +22,23 @@
 <main>
     <article>
         <figure>
-            <div id="chart-history" style="width: 1000px;height:500px;"></div>
+            <div class="chart" id="chart-history"></div>
             <figcaption>股票历史走势图</figcaption>
         </figure>
     </article>
     <aside>
         <form action="" method="get">
             <div>
-                <label for="input-code">股票代码:</label>
-                <input autofocus id="input-code" type="search"/>
+                <label for="input-select-code">选择股票代码</label>
+                <input autofocus id="input-select-code" list="code-list" type="search">
+                <datalist id="code-list">
+                </datalist>
             </div>
+            <div>
+                <label for="input-code">股票代码:</label>
+                <input id="input-code" readonly type="text"/>
+            </div>
+
             <div>
                 <label for="input-name">股票名称:</label>
                 <input id="input-name" readonly type="text"/>

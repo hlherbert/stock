@@ -1,4 +1,19 @@
 // 股票历史
+const iDayK = 0;
+const iMA5 = 1;
+const iMA10 = 2;
+const iMA20 = 3;
+const iMA30 = 4;
+const iVolume = 5;
+
+const xDayK = 0;
+const xVolume = 1;
+
+const jOpenPrice = 1;
+const jClosePrice = 2;
+const jLowPrice = 3;
+const jHighPrice = 4;
+
 let upColor = '#ec0000';
 let upBorderColor = '#8A0000';
 let downColor = '#00da3c';
@@ -105,29 +120,71 @@ let option0 = {
         trigger: 'axis',
         axisPointer: {
             type: 'cross'
+        },
+        formatter: function (param) {
+            let findSeriesData = function(serieses, seriesName, index) {
+                for (let i=0;i<serieses.length;i++) {
+                    if (serieses[i].seriesName === seriesName) {
+                        if (!!index && !!serieses[i].data[index]) {
+                            return serieses[i].data[index];
+                        } else {
+                            return serieses[i].data;
+                        }
+                    }
+                }
+                return "-";
+            }
+
+            let openPrice =  findSeriesData(param, '日K',jOpenPrice);
+            let closePrice =  findSeriesData(param, '日K',jClosePrice);
+            let lowPrice =  findSeriesData(param, '日K',jLowPrice);
+            let highPrice =  findSeriesData(param, '日K',jHighPrice);
+
+            let ma5Series = findSeriesData(param, 'MA5');
+            let ma10Series = findSeriesData(param, 'MA10');
+            let ma20Series = findSeriesData(param, 'MA20');
+            let ma30Series = findSeriesData(param, 'MA30');
+            let volumeSeries = findSeriesData(param, '成交量(手)');
+
+            return [
+                '日期: ' + param[0].name,
+                '<hr size=1 style="margin: 3px 0">',
+                '开盘价(￥): ' + openPrice + '<br/>',
+                '收盘价(￥): ' + closePrice + '<br/>',
+                '最低价(￥): ' + lowPrice + '<br/>',
+                '最高价(￥): ' + highPrice + '<br/>',
+                '成交量(手): ' + volumeSeries + '<br/>',
+                '<hr size=1 style="margin: 3px 0">',
+                'MA5: ' + ma5Series + '<br/>',
+                'MA10: ' + ma10Series + '<br/>',
+                'MA20: ' + ma20Series + '<br/>',
+                'MA30: ' + ma30Series + '<br/>'                
+            ].join('');
         }
     },
     legend: {
-        data: ['日K', 'MA5', 'MA10', 'MA20', 'MA30']
+        data: ['日K', 'MA5', 'MA10', 'MA20', 'MA30', '成交量(手)']
     },
     axisPointer: {
-        link: {xAxisIndex: 'all'},
+        link: {
+            xAxisIndex: 'all'
+        },
         label: {
             backgroundColor: '#777'
         }
     },
-    grid: [
-    {
-        left: '10%',
-        right: '8%',
-        height: '50%'
-    },
-    {
-        left: '10%',
-        right: '8%',
-        top: '63%',
-        height: '16%'
-    }],
+    grid: [{
+            left: '10%',
+            right: '8%',
+            height: '50%'
+        },
+        {
+            left: '10%',
+            right: '8%',
+            top: '63%',
+            height: '16%'
+        }
+    ],
     xAxis: [{
             type: 'category',
             data: data0.categoryData,
@@ -220,87 +277,12 @@ let option0 = {
                     param = param[0];
                     return [
                         '日期: ' + param.name + '<hr size=1 style="margin: 3px 0">',
-                        '开盘价: ' + param.data[0] + '<br/>',
+                        '开盘价: ' + param.data[i] + '<br/>',
                         '收盘价: ' + param.data[1] + '<br/>',
                         '最低价: ' + param.data[2] + '<br/>',
                         '最高价: ' + param.data[3] + '<br/>'
                     ].join('');
                 }
-            },
-            markPoint: {
-                label: {
-                    normal: {
-                        formatter: function (param) {
-                            return param != null ? Math.round(param.value) : '';
-                        }
-                    }
-                },
-                data: [{
-                        name: '最高点',
-                        type: 'max',
-                        valueDim: 'highest'
-                    },
-                    {
-                        name: '最低点',
-                        type: 'min',
-                        valueDim: 'lowest'
-                    },
-                    {
-                        name: '平均收盘价',
-                        type: 'average',
-                        valueDim: 'close'
-                    }
-                ],
-                tooltip: {
-                    formatter: function (param) {
-                        return param.name + '<br>' + (param.data.coord || '');
-                    }
-                }
-            },
-            markLine: {
-                symbol: ['none', 'none'],
-                data: [
-                    [{
-                            name: 'from lowest to highest',
-                            type: 'min',
-                            valueDim: 'lowest',
-                            symbol: 'circle',
-                            symbolSize: 10,
-                            label: {
-                                normal: {
-                                    show: false
-                                },
-                                emphasis: {
-                                    show: false
-                                }
-                            }
-                        },
-                        {
-                            type: 'max',
-                            valueDim: 'highest',
-                            symbol: 'circle',
-                            symbolSize: 10,
-                            label: {
-                                normal: {
-                                    show: false
-                                },
-                                emphasis: {
-                                    show: false
-                                }
-                            }
-                        }
-                    ],
-                    {
-                        name: 'min line on close',
-                        type: 'min',
-                        valueDim: 'close'
-                    },
-                    {
-                        name: 'max line on close',
-                        type: 'max',
-                        valueDim: 'close'
-                    }
-                ]
             }
         },
         {
@@ -357,12 +339,14 @@ let option0 = {
     ]
 };
 
-
+let stockmetas = queryStockMetas();
 
 
 // 股票代码
+let codelist = document.querySelector('#code-list');
+let inputSelectCode = document.querySelector('#input-select-code');
+inputSelectCode.addEventListener('input', onCodeChange);
 let inputCode = document.querySelector('#input-code');
-inputCode.addEventListener('keyup', onCodeChange);
 
 // 股票名称
 let inputName = document.querySelector('#input-name');
@@ -373,14 +357,17 @@ btnQuery.addEventListener('click', onBtnQueryClick);
 
 // 图表
 let chartHistory = echarts.init(document.querySelector('#chart-history'));
-initChart(chartHistory)
-let stockmetas = queryStockMetas();
+
+
+initCodeOptions(codelist, stockmetas);
+initChart(chartHistory, option0);
 
 
 // 股票代码改变
 function onCodeChange(e) {
     // 更新股票名称
-    let code = inputCode.value;
+    let code = inputSelectCode.value;
+    inputCode.value = code;
     updateStockName(inputName, code);
 }
 
@@ -429,7 +416,7 @@ function queryStockName(code) {
 // 查询历史数据
 function queryStockHistory(code, callback) {
     //let url = "/stock/data?code=603999&start=20100101&end=20190508";
-    let url = stringutil.stringFormat('/stock/data?code={0}&start=20100101&end=20190508', code);
+    let url = stringutil.stringFormat('/stock/data?code={0}&start=20000101&end=20300101', code);
     jQuery.get(url)
         .done(function (stockdata) {
             callback(stockdata);
@@ -439,13 +426,20 @@ function queryStockHistory(code, callback) {
         });
 }
 
-
-
-
+// 初始化股票代码下拉框选项
+function initCodeOptions(codelist, stockmetas) {
+    codelist.options = [];    
+    for (let i=0;i<stockmetas.length;i++) {
+        let meta = stockmetas[i];
+        let strOption = stringutil.stringFormat('{0}({1})', meta.code, meta.name);
+        
+        $("#code-list").append("<option value='"+ meta.code +"'>"+strOption+"</option>");
+    }
+}
 
 // 显示标题，图例和空的坐标轴
-function initChart(chart) {
-    chart.setOption(option0);
+function initChart(chart, option) {
+    chart.setOption(option);
 }
 
 // 更新股票名称
@@ -459,12 +453,6 @@ function updateStockHistoryChart(chart, code) {
         if (stockdata === null) {
             return;
         }
-        const iDayK = 0;
-        const iMA5 = 1;
-        const iMA10 = 2;
-        const iMA20 = 3;
-        const iMA30 = 4;
-        const iVolume = 5;
 
         let optionNew = option0;
         // 更新标题
@@ -473,7 +461,9 @@ function updateStockHistoryChart(chart, code) {
 
         // 填入数据
         let dataNew = extractStockData(stockdata);
-        optionNew.xAxis.data = dataNew.categoryData;
+        optionNew.xAxis[xDayK].data = dataNew.categoryData;
+        optionNew.xAxis[xVolume].data = dataNew.categoryData;
+
         optionNew.series[iDayK].data = dataNew.values;
         optionNew.series[iMA5].data = calculateMA(5, dataNew);
         optionNew.series[iMA10].data = calculateMA(10, dataNew);
@@ -522,7 +512,7 @@ function extractStockData(stockdata) {
         let code = row.code;
         let exchangePercent = row.exchangePercent;
         let amount = row.amount; //成交量（手）
-        let amountMoney = row.amountMoney;//成交金额（万）
+        let amountMoney = row.amountMoney; //成交金额（万）
         let growPercent = row.growPercent;
         let growPrice = row.growPrice;
 
@@ -550,7 +540,7 @@ function calculateMA(dayCount, data) {
         }
         var sum = 0;
         for (var j = 0; j < dayCount; j++) {
-            sum += data.values[i - j][1];
+            sum += data.values[i - j][jClosePrice];
         }
         result.push(sum / dayCount);
     }

@@ -5,7 +5,7 @@ html {
 }
 
 body {
-    width: 1200px;
+    width: 80%;
     margin: 0 auto;
     background-color: white;
     padding: 0 20px 20px 20px;
@@ -89,4 +89,10 @@ textarea {
 button {
   /* 这个外边距的大小与label和文本输入框之间的间距差不多 */
   margin-left: .5em;
+}
+
+.chart {
+  width: 90%;
+  height: 500px;
+  border: 1px solid black;
 }

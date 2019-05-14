@@ -6,6 +6,9 @@ import com.hl.stock.core.base.i18n.StockMessage;
 import com.hl.stock.core.base.model.StockData;
 import com.hl.stock.core.base.model.StockMeta;
 import com.hl.stock.core.base.model.StockZone;
+import com.hl.stock.core.base.task.StockTask;
+import com.hl.stock.core.base.task.StockTaskManager;
+import com.hl.stock.core.base.task.StockTaskType;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import com.hl.stock.core.common.util.PerformanceUtils;
 import org.slf4j.Logger;
@@ -21,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -35,6 +39,9 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
 
     @Autowired
     private StockDownloader stockDownloader;
+
+    @Autowired
+    private StockTaskManager stockTaskManager;
 
     /**
      * 下载数据的起始时间
@@ -133,7 +140,16 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
     }
 
     @Override
-    public void complementAllStockHistoryData() {
+    public String complementAllStockHistoryData() {
+        // 检查同类任务是否已经存在
+        StockTask taskOld = stockTaskManager.getFirstTaskByType(StockTaskType.ComplementStockHistoryData);
+        if (taskOld != null) {
+            logger.warn("task (id={}, type={}) already exists. do not repeat it.", taskOld.getId(), taskOld.getType());
+            return taskOld.getId();
+        }
+
+        StockTask task = stockTaskManager.createTask(StockTaskType.ComplementStockHistoryData);
+        task.start();
         // 下载元数据
         PerformanceUtils.logTimeStart(StockMessage.DownloadAllStockMeta.toString());
         downloadSaveMeta();
@@ -149,6 +165,9 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
         // 多线程干活，提高性能。 同时并发下载多只股票的数据
         ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         List<Future<?>> futures = new ArrayList<Future<?>>();
+        int nStockMetas = stockMetas.size();
+        CountDownLatch countDownLatch = new CountDownLatch(nStockMetas);
+
         for (StockMeta meta : stockMetas) {
             Future<?> future = fixedThreadPool.submit(new Runnable() {
                 @Override
@@ -166,10 +185,15 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
                     try {
                         Thread.sleep(delayPerStock);
                         downloadSaveHistory(meta.getZone(), meta.getCode(), lastDate, historyEndDate);
+                        task.incProgress(100.0 / (double) nStockMetas);
                         PerformanceUtils.logTimeEnd(MessageFormat.format("{0}. code={1}， start={2}, end={3}",
                                 StockMessage.ComplementStockHistoryData, code, lastDate, historyEndDate));
                     } catch (InterruptedException e) {
                         logger.error("thread interrupted.", e);
+                    }
+                    countDownLatch.countDown();
+                    if (countDownLatch.getCount() == 0) {
+                        task.finish();
                     }
                 }
             });
@@ -178,5 +202,6 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
         }
 
         PerformanceUtils.logTimeEnd(StockMessage.ComplementAllStockHistoryData.toString());
+        return task.getId();
     }
 }

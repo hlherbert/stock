@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <title>股票数据更新</title>
+
+    <link href="../styles/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+<header>
+    <h1>股票数据更新</h1>
+</header>
+<nav>
+    <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="stock-history.html">股票历史走势</a></li>
+        <li><a href="stock-data.html">股票数据更新</a></li>
+    </ul>
+</nav>
+<main>
+    <article>
+        <p>股票数据补录</p>
+    </article>
+    <aside>
+        <form action="" method="get">
+            <div>
+                <label for="progress-complement">进度</label>
+                <progress id='progress-complement' max="100" value="0"><span id="progress-complement-val">50%</span>
+                </progress>
+                <span id='progress-complement-val'></span>
+                <button class="button" id="btn-complement" type="submit">补录数据到昨天</button>
+            </div>
+        </form>
+    </aside>
+</main>
+<footer></footer>
+
+<script src="../scripts/lib/jquery/jquery-3.4.1.js"></script>
+<script src="../scripts/lib/echarts/echarts.js"></script>
+<script src="../scripts/common/stringutil.js"></script>
+<script src="../scripts/stock-data.js"></script>
+</body>
+
+</html>

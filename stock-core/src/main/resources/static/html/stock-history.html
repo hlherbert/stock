@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <title>股票分析平台主页</title>
+
+    <link href="../styles/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+<header>
+    <h1>股票历史走势</h1>
+</header>
+<nav>
+    <ul>
+        <li><a href="../index.html">主页</a></li>
+        <li><a href="">股票历史走势</a></li>
+    </ul>
+</nav>
+<main>
+    <article>
+        <figure>
+            <div id="chart-history" style="width: 1000px;height:500px;"></div>
+            <figcaption>股票历史走势图</figcaption>
+        </figure>
+    </article>
+    <aside>
+        <form action="" method="get">
+            <div>
+                <label for="input-code">股票代码:</label>
+                <input autofocus id="input-code" type="search"/>
+            </div>
+            <div>
+                <label for="input-name">股票名称:</label>
+                <input id="input-name" readonly type="text"/>
+            </div>
+            <div class="button">
+                <button id="btn-query" type="submit">查询</button>
+            </div>
+        </form>
+    </aside>
+</main>
+<footer></footer>
+
+<script src="../scripts/lib/jquery/jquery-3.4.1.js"></script>
+<script src="../scripts/lib/echarts/echarts.js"></script>
+<script src="../scripts/common/stringutil.js"></script>
+<script src="../scripts/stock-history.js"></script>
+</body>
+
+</html>

@@ -2,6 +2,7 @@ package com.hl.stock.core.server.controller.data;
 
 import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.base.model.StockData;
+import com.hl.stock.core.base.model.StockMeta;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,11 @@ public class StockDaoController {
 
     @Autowired
     private StockDao stockDao;
+
+    @GetMapping("/stock/meta")
+    public List<StockMeta> loadMeta() {
+        return stockDao.loadMeta();
+    }
 
     @GetMapping("/stock/data")
     public List<StockData> loadData(@RequestParam("code") String code,

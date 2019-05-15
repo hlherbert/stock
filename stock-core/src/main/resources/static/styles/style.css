@@ -12,6 +12,70 @@ body {
     border: 5px solid black;
 }
 
+/* 主布局 */
+main {
+  display: flex;
+}
+
+article, section {
+  flex: 4;
+}
+
+aside {
+  flex: 1;
+  margin-left: 10px;
+  padding: 1%;
+}
+
+aside a {
+  display: block;
+  float: left;
+  width: 50%;
+}
+
+aside img {
+  max-width: 100%;
+}
+
+footer {
+  margin-top: 10px;
+}
+
+
+
+/* 导航栏 */
+nav {
+  height: 50px;
+  flex: 100%;
+  display: flex;
+  border: 1px dashed;
+}
+
+nav ul {
+  padding: 0;
+  list-style-type: none;
+  flex: 2;
+  display: flex;
+}
+
+nav li {
+  display: inline;
+  text-align: center;
+  flex: 1;
+}
+
+nav a, nav span {
+  display: inline-block;
+  font-size: 2rem;
+  height: 3rem;
+  line-height: 1.7;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: black;
+}
+
+
+
 h1 {
     margin: 0;
     padding: 20px 0;
@@ -35,7 +99,6 @@ li {
 form {
   /* 居中表单 */
   margin: 0 auto;
-  width: 500px;
   /* 显示表单的轮廓 */
   padding: 1em;
   border: 1px solid #CCC;
@@ -104,4 +167,69 @@ progress span {
   position: absolute;
   top: 0;
   right: 5px;
+}
+
+/* 表单验证 */
+
+/* 验证失败的元素样式 */
+input:invalid{
+  border-color: #900;
+  background-color: #FDD;
+}
+
+input:focus:invalid {
+  outline: none;
+}
+
+/* 错误消息的样式 */
+.error {
+  width  : 100%;
+  padding: 0;
+ 
+  font-size: 80%;
+  color: white;
+  background-color: #900;
+  border-radius: 0 0 5px 5px;
+ 
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.error.active {
+  padding: 0.3em;
+}
+
+
+/* 表格 */
+table {
+  border-collapse: collapse;
+  border: 2px solid;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+}
+
+td, th {
+  border: 1px solid;
+  padding: 10px 20px;
+}
+
+th {
+  background-color: rgb(235,235,235);
+}
+
+td {
+  text-align: center;
+}
+
+caption {
+  padding: 10px;
+}
+
+tbody {
+  font-size: 90%;
+  font-style: italic;
+}
+
+tfoot {
+  font-weight: bold;
 }

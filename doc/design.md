@@ -1,11 +1,11 @@
 # stock程序设计
 
 ## 包依赖
-
-model <-- data <-- download
-               <-- query
-               <-- analysis
-
+```
+model--data 
+        |--download
+        |--analysis
+```
 
 ## 数据模型模块
 model
@@ -83,6 +83,16 @@ class StockDao {
 
 ## 分析模块
 analysis
+
+### 计算平均价格
+```
+class StockAnalysis {
+    avgPrice(StockData[] data)
+}
+```
+avgPrice = sum(成交金额)/sum(成交量)
+
+
 模拟指定在某日buyDay购入某股stockCode，另一日sellDay卖出，计算平均每日收益benifitDay。
 指定选股策略，使用策略在历史数据中模拟交易，给策略评分。
 找出最优策略。

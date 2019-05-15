@@ -7,6 +7,11 @@
 
     <link href="../styles/style.css" rel="stylesheet">
 
+    <script src="../scripts/lib/jquery/jquery-3.4.1.js"></script>
+    <script src="../scripts/lib/echarts/echarts.js"></script>
+    <script src="../scripts/common/stringutil.js"></script>
+    <script src="../scripts/stock-history.js"></script>
+    <script src="../scripts/stock-stat.js"></script>
 </head>
 
 <body>
@@ -22,40 +27,104 @@
 </nav>
 <main>
     <article>
-        <figure>
-            <div class="chart" id="chart-history"></div>
-            <figcaption>股票历史走势图</figcaption>
-        </figure>
-    </article>
-    <aside>
-        <form action="" method="">
-            <div>
-                <label for="input-select-code">选择股票代码</label>
-                <input autofocus id="input-select-code" list="code-list" type="search">
-                <datalist id="code-list">
-                </datalist>
-            </div>
-            <div>
-                <label for="input-code">股票代码:</label>
-                <input id="input-code" readonly type="text"/>
-            </div>
+        <section>
+            <h2>查询</h2>
+            <!-- 查询 -->
+            <form action="" id="form-query" method="">
+                <div>
+                    <label for="input-start">起始日期:</label>
+                    <input id="input-start" pattern="[0-9]{8}" type="text" value="20000101"/>
+                    <span aria-live="polite" class="error" id="start-error"></span>
+                </div>
+                <div>
+                    <label for="input-end">结束日期:</label>
+                    <input id="input-end" pattern="[0-9]{8}" type="text" value="20300101"/>
+                    <span aria-live="polite" class="error" id="end-error"></span>
+                </div>
+                <div>
+                    <label for="input-select-code">选择股票代码</label>
+                    <input autofocus id="input-select-code" list="code-list" pattern="[0-9]{6}" required
+                           type="search">
+                    <datalist id="code-list">
+                    </datalist>
+                    <span aria-live="polite" class="error" id="code-error"></span>
+                </div>
+                <div>
+                    <label for="input-code">股票代码:</label>
+                    <input id="input-code" readonly type="text"/>
+                </div>
 
+                <div>
+                    <label for="input-name">股票名称:</label>
+                    <input id="input-name" readonly type="text"/>
+                </div>
+                <div class="button">
+                    <button id="btn-query" type="submit">查询</button>
+                </div>
+            </form>
+        </section>
+
+
+        <section>
+            <h2>结果</h2>
+            <figure>
+                <div class="chart" id="chart-history"></div>
+                <figcaption>股票历史走势图</figcaption>
+            </figure>
+        </section>
+
+        <!-- 统计结果 -->
+        <section id="sec-stat">
+            <h2>统计结果</h2>
             <div>
-                <label for="input-name">股票名称:</label>
-                <input id="input-name" readonly type="text"/>
+                <label for="sel-index">统计指数:</label>
+                <select id="sel-index">
+                    <option value="openPrice">开盘价</option>
+                    <option value="closePrice">收盘价</option>
+                </select>
             </div>
-            <div class="button">
-                <button id="btn-query" type="submit">查询</button>
-            </div>
-        </form>
-    </aside>
+            <table id="table-stat">
+                <caption>统计结果</caption>
+                <thead>
+                <tr>
+                    <th>统计项</th>
+                    <th>日期</th>
+                    <th>价格</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th>最早数据</th>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <th>最近数据</th>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <th>最低价</th>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <th>最高价</th>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <th>均价</th>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </article>
 </main>
 <footer></footer>
 
-<script src="../scripts/lib/jquery/jquery-3.4.1.js"></script>
-<script src="../scripts/lib/echarts/echarts.js"></script>
-<script src="../scripts/common/stringutil.js"></script>
-<script src="../scripts/stock-history.js"></script>
 </body>
 
 </html>

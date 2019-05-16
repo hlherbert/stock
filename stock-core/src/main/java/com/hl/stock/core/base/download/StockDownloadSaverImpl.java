@@ -159,7 +159,6 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
 
         // 多线程干活，提高性能。 同时并发下载多只股票的数据
         ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        List<Future<?>> futures = new ArrayList<Future<?>>();
         int nStockMetas = stockMetas.size();
         CountDownLatch countDownLatch = new CountDownLatch(nStockMetas);
 
@@ -187,14 +186,13 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
                         logger.error("thread interrupted.", e);
                     } finally {
                         countDownLatch.countDown();
+                        logger.info("remain {} stocks to download.", countDownLatch.getCount());
                         if (countDownLatch.getCount() <= 0) {
                             task.finish();
                         }
                     }
                 }
             });
-
-            futures.add(future);
         }
 
         return task.getId();

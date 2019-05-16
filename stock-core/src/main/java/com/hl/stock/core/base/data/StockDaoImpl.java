@@ -58,4 +58,9 @@ public class StockDaoImpl implements StockDao {
     public Date lastDateOfData(String code) {
         return stockDataMapper.lastDateOfSeries(code);
     }
+
+    @Override
+    public void washData() {
+        stockDataMapper.washData();
+    }
 }

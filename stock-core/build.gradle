@@ -30,6 +30,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-aop'
     compile 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.0'
     compile 'mysql:mysql-connector-java'
 

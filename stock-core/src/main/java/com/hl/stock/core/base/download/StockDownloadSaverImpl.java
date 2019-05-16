@@ -2,15 +2,14 @@ package com.hl.stock.core.base.download;
 
 import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.base.exception.StockErrorCode;
-import com.hl.stock.core.base.i18n.StockMessage;
 import com.hl.stock.core.base.model.StockData;
 import com.hl.stock.core.base.model.StockMeta;
 import com.hl.stock.core.base.model.StockZone;
 import com.hl.stock.core.base.task.StockTask;
 import com.hl.stock.core.base.task.StockTaskManager;
 import com.hl.stock.core.base.task.StockTaskType;
+import com.hl.stock.core.common.perf.PerformanceMeasure;
 import com.hl.stock.core.common.util.DateTimeUtils;
-import com.hl.stock.core.common.util.PerformanceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
-import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,6 +58,7 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
     @Value("${stock.task.StockDownloadTask.downloadAllStockHistoryData.delayPerStock}")
     private int delayPerStock;
 
+    @PerformanceMeasure
     @Override
     public void downloadSaveMeta() {
         List<StockMeta> metas = stockDownloader.downloadMeta();
@@ -72,6 +71,7 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
     }
 
 
+    @PerformanceMeasure
     @Override
     public void downloadSaveHistory(StockZone zone, String code, Date startDate, Date endDate) {
         List<StockData> data = stockDownloader.downloadHistory(zone, code, startDate, endDate);
@@ -86,12 +86,9 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
     @Override
     public void downloadAllStockHistoryData() {
         // 下载元数据
-        PerformanceUtils.logTimeStart(StockMessage.DownloadAllStockMeta.toString());
         downloadSaveMeta();
-        PerformanceUtils.logTimeEnd(StockMessage.DownloadAllStockMeta.toString());
 
         // 下载股票数据
-        PerformanceUtils.logTimeStart(StockMessage.DownloadAllStockHistoryData.toString());
         List<StockMeta> stockMetas = stockDao.loadMeta();
         final Date historyStartDateFinal = getDefaultHistoryStartDate();
         final Date historyEndDate = new Date();
@@ -110,7 +107,6 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
                         try {
                             Thread.sleep(delayPerStock);
                             downloadSaveHistory(meta.getZone(), meta.getCode(), historyStartDateFinal, historyEndDate);
-                            PerformanceUtils.logTimeEnd("down stock data code=" + meta.getCode());
                         } catch (InterruptedException e) {
                             logger.error("thread interrupted.", e);
                         }
@@ -120,8 +116,6 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
 
             futures.add(future);
         }
-
-        PerformanceUtils.logTimeEnd(StockMessage.DownloadAllStockHistoryData.toString());
     }
 
     /**
@@ -150,13 +144,14 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
 
         StockTask task = stockTaskManager.createTask(StockTaskType.ComplementStockHistoryData);
         task.start();
+
+        // 数据清洗
+        stockDao.washData();
+
         // 下载元数据
-        PerformanceUtils.logTimeStart(StockMessage.DownloadAllStockMeta.toString());
         downloadSaveMeta();
-        PerformanceUtils.logTimeEnd(StockMessage.DownloadAllStockMeta.toString());
 
         // 下载股票数据
-        PerformanceUtils.logTimeStart(StockMessage.ComplementAllStockHistoryData.toString());
         List<StockMeta> stockMetas = stockDao.loadMeta();
 
         final Date historyStartDateFinal = getDefaultHistoryStartDate();
@@ -174,7 +169,9 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
                 public void run() {
                     // 获取改股票最后一天数据时间
                     String code = meta.getCode();
+
                     Date lastDate = stockDao.lastDateOfData(code);
+                    lastDate = new Date(lastDate.getTime() + DateTimeUtils.ONE_DAY_MILLISECONDS);
 
                     // 如果从数据库里没有查到该股票的最后一天数据，则起始时间设置为配置中的数据开始时间
                     if (lastDate == null) {
@@ -186,14 +183,13 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
                         Thread.sleep(delayPerStock);
                         downloadSaveHistory(meta.getZone(), meta.getCode(), lastDate, historyEndDate);
                         task.incProgress(100.0 / (double) nStockMetas);
-                        PerformanceUtils.logTimeEnd(MessageFormat.format("{0}. code={1}， start={2}, end={3}",
-                                StockMessage.ComplementStockHistoryData, code, lastDate, historyEndDate));
                     } catch (InterruptedException e) {
                         logger.error("thread interrupted.", e);
-                    }
-                    countDownLatch.countDown();
-                    if (countDownLatch.getCount() == 0) {
-                        task.finish();
+                    } finally {
+                        countDownLatch.countDown();
+                        if (countDownLatch.getCount() <= 0) {
+                            task.finish();
+                        }
                     }
                 }
             });
@@ -201,7 +197,6 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
             futures.add(future);
         }
 
-        PerformanceUtils.logTimeEnd(StockMessage.ComplementAllStockHistoryData.toString());
         return task.getId();
     }
 }

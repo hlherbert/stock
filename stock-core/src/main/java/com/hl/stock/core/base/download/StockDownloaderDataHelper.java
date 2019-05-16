@@ -124,6 +124,19 @@ class StockDownloaderDataHelper {
         return null;
     }
 
+    /**
+     * 验证股票数据合法性
+     *
+     * @param data 股票数据
+     * @return true: 股票数据合法，可以入库。 false: 股票数据非法，不能入库
+     */
+    private boolean validateData(StockData data) {
+        // 规则： 股票数据的日期如果比当前时间还晚，则不允许入库
+        if (data == null) {
+            return false;
+        }
+        return !data.getDate().after(new Date());
+    }
 
     /**
      * 下载搜狐股票的历史数据
@@ -174,7 +187,9 @@ class StockDownloaderDataHelper {
             List<StockData> stockDatas = new ArrayList<>(hqEveryDay.size());
             for (SouhuHistoryHqHq hqhq : hqEveryDay) {
                 StockData stockData = convertSouhuHq(code, hqhq);
-                stockDatas.add(stockData);
+                if (validateData(stockData)) {
+                    stockDatas.add(stockData);
+                }
             }
             return stockDatas;
         } catch (JsonSyntaxException e) {

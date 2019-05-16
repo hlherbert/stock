@@ -75,4 +75,7 @@ public interface StockDataMapper {
 
     @Delete("DELETE FROM stock_data WHERE code = #{code} AND date = #{date}")
     void deletePoint(String code, Date date);
+
+    @Delete("DELETE FROM stock_data WHERE date > now()")
+    void washData();
 }

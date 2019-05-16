@@ -72,4 +72,10 @@ public interface StockDao {
      * @return 该股票历史数据中的最后日期. 如果未查到该股票数据，则返回null
      */
     Date lastDateOfData(String code);
+
+    /**
+     * 清洗数据
+     * 将非法的股票数据清洗掉，例如时间为未来时间的数据。
+     */
+    void washData();
 }

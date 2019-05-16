@@ -28,7 +28,7 @@ public class StockAnalysisTest {
     public void stat() throws ParseException {
         String code = "000002"; //万科A
         List<StockData> datas = stockDao.loadData(code, DateTimeUtils.fromString(DateTimeUtils.yyyyMMdd, "20000101"), new Date());
-        StockStat stat = stockAnalysis.stat(datas, StockStatIndex.OpenPrice);
+        StockStat stat = stockAnalysis.stat(StockStatIndex.OpenPrice, datas);
         System.out.println(JsonUtils.toPrettyJson(stat));
     }
 }

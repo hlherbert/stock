@@ -1,17 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html id="doc-stock-history" lang="zh">
 
 <head>
     <meta charset="utf-8">
     <title>股票历史走势</title>
 
     <link href="../styles/style.css" rel="stylesheet">
-
-    <script src="../scripts/lib/jquery/jquery-3.4.1.js"></script>
-    <script src="../scripts/lib/echarts/echarts.js"></script>
-    <script src="../scripts/common/stringutil.js"></script>
-    <script src="../scripts/stock-history.js"></script>
-    <script src="../scripts/stock-stat.js"></script>
+    <script src="../dist/bundle.js"></script>
 </head>
 
 <body>
@@ -79,8 +74,8 @@
             <div>
                 <label for="sel-index">统计指数:</label>
                 <select id="sel-index">
-                    <option value="openPrice">开盘价</option>
-                    <option value="closePrice">收盘价</option>
+                    <option value="OpenPrice">开盘价</option>
+                    <option value="ClosePrice">收盘价</option>
                 </select>
             </div>
             <table id="table-stat">
@@ -89,34 +84,39 @@
                 <tr>
                     <th>统计项</th>
                     <th>日期</th>
-                    <th>价格</th>
+                    <th>开盘价</th>
+                    <th>收盘价</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <th>最早数据</th>
+                    <th>最早</th>
                     <td>-</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <th>最近数据</th>
                     <td>-</td>
                     <td>-</td>
                 </tr>
                 <tr>
-                    <th>最低价</th>
+                    <th>最近</th>
+                    <td>-</td>
                     <td>-</td>
                     <td>-</td>
                 </tr>
                 <tr>
-                    <th>最高价</th>
+                    <th>最低</th>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <th>最高</th>
+                    <td>-</td>
                     <td>-</td>
                     <td>-</td>
                 </tr>
                 <tr>
                     <th>均价</th>
                     <td>-</td>
-                    <td>-</td>
+                    <td colspan="2">-</td>
                 </tr>
                 </tbody>
             </table>

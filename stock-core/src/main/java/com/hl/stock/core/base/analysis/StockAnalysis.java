@@ -1,6 +1,8 @@
 package com.hl.stock.core.base.analysis;
 
+import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.base.model.StockData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -11,6 +13,9 @@ public class StockAnalysis {
     private static final int WAN = 10000;
     private static final int SHOU = 100;
 
+    @Autowired
+    private StockDao stockDao;
+
     /**
      * 获取某种指标下的价格
      *
@@ -18,7 +23,7 @@ public class StockAnalysis {
      * @param index 指标
      * @return
      */
-    private static double getPrice(StockData data, StockStatIndex index) {
+    private static double getPrice(StockStatIndex index, StockData data) {
         switch (index) {
             case OpenPrice:
                 return data.getOpenPrice();
@@ -36,7 +41,7 @@ public class StockAnalysis {
      * @param index 统计指标
      * @return 统计结果
      */
-    public StockStat stat(List<StockData> data, StockStatIndex index) {
+    public StockStat stat(StockStatIndex index, List<StockData> data) {
         if (data == null || data.isEmpty()) {
             return null;
         }
@@ -47,6 +52,8 @@ public class StockAnalysis {
         StockData latest = firstData;
         StockData high = firstData;
         StockData low = firstData;
+        double highPrice = getPrice(index, firstData);
+        double lowPrice = getPrice(index, firstData);
 
         for (StockData d : data) {
             totalAmountMoney += d.getAmountMoney();
@@ -60,12 +67,14 @@ public class StockAnalysis {
                 latest = d;
             }
 
-            double price = getPrice(d, index);
-            if (price > getPrice(high, index)) {
+            double price = getPrice(index, d);
+            if (price > highPrice) {
                 high = d;
+                highPrice = price;
             }
-            if (price < getPrice(low, index)) {
+            if (price < lowPrice) {
                 low = d;
+                lowPrice = price;
             }
 
         }
@@ -78,6 +87,21 @@ public class StockAnalysis {
         stockStat.setLatest(latest);
         stockStat.setHigh(high);
         stockStat.setLow(low);
+        stockStat.setHighPrice(highPrice);
+        stockStat.setLowPrice(lowPrice);
         return stockStat;
+    }
+
+    /**
+     * 统计数据
+     *
+     * @param code      股票代码
+     * @param startDate 起始时间
+     * @param endDate   结束时间
+     * @param index     统计指标
+     * @return 统计结果
+     */
+    public StockStat stat(StockStatIndex index, String code, Date startDate, Date endDate) {
+        return stat(index, stockDao.loadData(code, startDate, endDate));
     }
 }

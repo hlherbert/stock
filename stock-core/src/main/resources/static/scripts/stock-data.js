@@ -1,34 +1,47 @@
 // 股票数据获取功能
+import jQuery from "jquery";
+import {StringUtil} from "./common/stringutil"
 
-(function () {
-    // 补录按钮
-    const maxProgress = 100; //进度100%
+const MAX_PROGRESS = 100; //进度100%
 
-    let labelProgressComplement = document.querySelector('#progress-complement-val');
-    let progressComplement = document.querySelector('#progress-complement');
-    let btnComplement = document.querySelector('#btn-complement');
-    btnComplement.addEventListener('click', onBtnComplementClick);
+export class StockData  {
+    constructor() {
+    }
 
+    // HTML页面加载后初始化
+    init(document) {
+        //注意：代码中的回调函数都要用callback.bind(this), 避免回调里面的this不是类对象而是调用者
+        if (document.querySelector('#doc-stock-data') === null) {
+            return;
+        }
+        this.labelProgressComplement = document.querySelector('#progress-complement-val');
+        this.progressComplement = document.querySelector('#progress-complement');
+        this.btnComplement = document.querySelector('#btn-complement');
+        this.btnComplement.addEventListener('click', this.onBtnComplementClick.bind(this));
+    }
 
     // 补录按钮按下
-    function onBtnComplementClick(e) {
+    onBtnComplementClick(e) {
         // 阻止默认提交行为
         e.preventDefault();
-        complement();
+        this.btnComplement.setAttribute('disabled', true);
+        this.complement();
     }
 
     // 补录
-    function complement() {
+    complement() {
         // 提交任务
         let url = "/stock/download/complement";
+        let that = this; //避免回调里this被错误指向调用者
         jQuery.post(url).done(function (taskId) {
-            let intervalId = setInterval(function () {
-                let urlTaskProgress = stringutil.stringFormat("/stock/task/progress?taskId={0}", taskId);
+            let intervalId = window.setInterval(function () {
+                let urlTaskProgress = StringUtil.stringFormat("/stock/task/progress?taskId={0}", taskId);
                 jQuery.get(urlTaskProgress)
                     .done(function (progress) {
-                        updateComplementProgress(progress);
-                        if (progress === maxProgress) {
-                            clearInterval(intervalId);
+                        that.updateComplementProgress(progress);
+                        if (progress === MAX_PROGRESS) {
+                            this.btnComplement.removeAttribute('disabled');
+                            that.clearInterval(intervalId);
                         }
                     });
             }, 1000);
@@ -36,11 +49,11 @@
     }
 
     // 更新补录进度条
-    function updateComplementProgress(progress) {
-        progressComplement.value = progress;
-        labelProgressComplement.textContent = progress + "%";
-        if (progress === maxProgress) {
-            labelProgressComplement.textContent = "完成";
+    updateComplementProgress(progress) {
+        this.progressComplement.value = progress;
+        this.labelProgressComplement.textContent = progress + "%";
+        if (progress === MAX_PROGRESS) {
+            this.labelProgressComplement.textContent = "完成";
         }
     }
-})();
+}

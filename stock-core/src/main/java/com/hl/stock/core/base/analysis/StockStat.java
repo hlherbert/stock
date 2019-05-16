@@ -12,7 +12,7 @@ public class StockStat {
      */
     private StockData high;
     /**
-     * 最高点
+     * 最低点
      */
     private StockData low;
     /**
@@ -27,6 +27,16 @@ public class StockStat {
      * 均价 = sum(成交金额)/sum(成交量)
      */
     private double avgPrice;
+
+    /**
+     * 最高价
+     */
+    private double highPrice;
+
+    /**
+     * 最低价
+     */
+    private double lowPrice;
 
     public StockStatIndex getIndex() {
         return index;
@@ -74,5 +84,21 @@ public class StockStat {
 
     public void setAvgPrice(double avgPrice) {
         this.avgPrice = avgPrice;
+    }
+
+    public double getHighPrice() {
+        return highPrice;
+    }
+
+    public void setHighPrice(double highPrice) {
+        this.highPrice = highPrice;
+    }
+
+    public double getLowPrice() {
+        return lowPrice;
+    }
+
+    public void setLowPrice(double lowPrice) {
+        this.lowPrice = lowPrice;
     }
 }

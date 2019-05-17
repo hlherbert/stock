@@ -1,95 +1,49 @@
 package com.hl.stock.core.base.analysis;
 
+import com.hl.stock.core.base.analysis.advice.StockAdvice;
+import com.hl.stock.core.base.analysis.advice.StockAdviceStrategy;
+import com.hl.stock.core.base.analysis.advice.StockAdvisor;
+import com.hl.stock.core.base.analysis.stat.StockStat;
+import com.hl.stock.core.base.analysis.stat.StockStatIndex;
+import com.hl.stock.core.base.analysis.stat.StockStator;
+import com.hl.stock.core.base.analysis.validate.StockValidator;
 import com.hl.stock.core.base.data.StockDao;
-import com.hl.stock.core.base.model.StockData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 
-@Component
+/**
+ * 分析模块的总服务，提供分析功能对外接口
+ */
+@Service
 public class StockAnalysis {
-    private static final int WAN = 10000;
-    private static final int SHOU = 100;
 
     @Autowired
     private StockDao stockDao;
 
-    /**
-     * 获取某种指标下的价格
-     *
-     * @param data  数据
-     * @param index 指标
-     * @return
-     */
-    private static double getPrice(StockStatIndex index, StockData data) {
-        switch (index) {
-            case OpenPrice:
-                return data.getOpenPrice();
-            case ClosePrice:
-                return data.getClosePrice();
-        }
-        // 默认使用开盘价
-        return data.getOpenPrice();
-    }
+    // 推荐器
+    @Autowired
+    private StockAdvisor stockAdvisor;
 
-    /**
-     * 统计数据
-     *
-     * @param data  股票数据
-     * @param index 统计指标
-     * @return 统计结果
-     */
-    public StockStat stat(StockStatIndex index, List<StockData> data) {
-        if (data == null || data.isEmpty()) {
-            return null;
-        }
-        StockData firstData = data.get(0);
-        double totalAmountMoney = 0;
-        double totalAmount = 0;
-        StockData earlist = firstData;
-        StockData latest = firstData;
-        StockData high = firstData;
-        StockData low = firstData;
-        double highPrice = getPrice(index, firstData);
-        double lowPrice = getPrice(index, firstData);
+    // 统计器
+    @Autowired
+    private StockStator stockStator;
 
-        for (StockData d : data) {
-            totalAmountMoney += d.getAmountMoney();
-            totalAmount += d.getAmount();
+    // 验证器
+    @Autowired
+    private StockValidator stockValidator;
 
-            Date date = d.getDate();
-            if (date.before(earlist.getDate())) {
-                earlist = d;
-            }
-            if (date.after(latest.getDate())) {
-                latest = d;
-            }
+    private StockStrategyEmulator stockStrategyEmulator;
 
-            double price = getPrice(index, d);
-            if (price > highPrice) {
-                high = d;
-                highPrice = price;
-            }
-            if (price < lowPrice) {
-                low = d;
-                lowPrice = price;
-            }
+    // 最优选股策略
+    private StockAdviceStrategy bestStrategy;
 
-        }
-        double avgPrice = (totalAmountMoney * WAN) / (totalAmount * SHOU);
-
-        StockStat stockStat = new StockStat();
-        stockStat.setIndex(index);
-        stockStat.setAvgPrice(avgPrice);
-        stockStat.setEarliest(earlist);
-        stockStat.setLatest(latest);
-        stockStat.setHigh(high);
-        stockStat.setLow(low);
-        stockStat.setHighPrice(highPrice);
-        stockStat.setLowPrice(lowPrice);
-        return stockStat;
+    @Autowired
+    public void setStockStrategyEmulator(StockStrategyEmulator stockStrategyEmulator) {
+        this.stockStrategyEmulator = stockStrategyEmulator;
+        bestStrategy = stockStrategyEmulator.findBestStrategy();
     }
 
     /**
@@ -102,6 +56,28 @@ public class StockAnalysis {
      * @return 统计结果
      */
     public StockStat stat(StockStatIndex index, String code, Date startDate, Date endDate) {
-        return stat(index, stockDao.loadData(code, startDate, endDate));
+        return stockStator.stat(index, stockDao.loadData(code, startDate, endDate));
     }
+
+    /**
+     * 使用最优策略，给出建议是否应该在当天买这支股票
+     *
+     * @param code    股票
+     * @param buyDate 购买日期
+     * @return 建议
+     */
+    public StockAdvice giveAdvice(String code, Date buyDate) {
+        return bestStrategy.advice(code, buyDate);
+    }
+
+    /**
+     * 使用最优策略，推荐可以购买的股票
+     *
+     * @param buyDate 买入日期
+     * @return 推荐股票清单，按照利润率从高到底排序
+     */
+    public List<StockAdvice> suggestStocks(Date buyDate) {
+        return stockAdvisor.suggestStocks(buyDate, bestStrategy);
+    }
+
 }

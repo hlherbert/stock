@@ -19,4 +19,15 @@ public class DateTimeUtils {
         DateFormat dateFormat = new SimpleDateFormat(format);
         return dateFormat.parse(str);
     }
+
+    /**
+     * 计算baseDate + days的日期
+     *
+     * @param baseDate 基础时间
+     * @param days     天数
+     * @return baseDate + days后的日期
+     */
+    public static Date dateAfterDays(Date baseDate, int days) {
+        return new Date(baseDate.getTime() + DateTimeUtils.ONE_DAY_MILLISECONDS);
+    }
 }

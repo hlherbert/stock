@@ -4,6 +4,10 @@ import {
     StringUtil
 } from './common/stringutil'
 
+const STYLECLASS_HIGH_RISK = "high-risk";
+const STYLECLASS_LOW_RISK = "low-risk";
+const STYLECLASS_MID_RISK = "mid-risk";
+
 export class StockStat {
 
     constructor() {
@@ -12,10 +16,12 @@ export class StockStat {
         this.inputCode;
         this.inputStart;
         this.inputEnd;
+        this.chartHistory;
+        this.pAdvice;
     }
 
     // HTML页面加载后初始化
-    init(document) {
+    init(document, chartHistory) {
         //注意：代码中的回调函数都要用callback.bind(this), 避免回调里面的this不是类对象而是调用者
 
         if (document.querySelector('#doc-stock-history') === null) {
@@ -27,17 +33,22 @@ export class StockStat {
         this.inputCode = document.querySelector('#input-code');
         this.inputStart = document.querySelector('#input-start');
         this.inputEnd = document.querySelector('#input-end');
+        this.pAdvice =  document.querySelector('#p-advice');
 
         // 查询按钮
         this.btnQuery = document.querySelector('#btn-query');
         this.btnQuery.addEventListener('click', this.onBtnQueryClick.bind(this));
+
+        //图表
+        this.chartHistory = chartHistory;
     }
 
     // 查询按钮按下
     onBtnQueryClick(e) {
         // 阻止默认提交行为
         e.preventDefault();
-        // 查询股票代码的历史并显示在echart里
+
+        // 查询股票统计信息并显示在图表里
         this.updateCurStatTable();
     }
 
@@ -77,7 +88,7 @@ export class StockStat {
             let row = table.insertRow(0);
             row.innerHTML = "<th>统计项</th><th>日期</th><th>开盘价</th><th>收盘价</th>";
 
-            if (stockstat == null) {
+            if (stockstat === null || stockstat === "") {
                 return;
             }
 
@@ -98,7 +109,13 @@ export class StockStat {
             insertDataRow('最低', stockstat.low);
             insertDataRow('最高', stockstat.high);
             row = table.insertRow(table.rows.length);
-            row.innerHTML = StringUtil.stringFormat('<th>均价</th><td>{0}</td><td colspan="2">{1}</td>', "-", stockstat.avgPrice);
+            row.innerHTML = StringUtil.stringFormat('<th>均价</th><td>{0}</td><td colspan="2">{1}</td>', "-", (stockstat.avgPrice !== null)?stockstat.avgPrice:"-");
+
+            // 更新建议
+            this.updateAdvice(this.pAdvice, stockstat.advice);
+            
+            // 更新echart里的平均线
+            this.updateChartAvgLine(this.chartHistory, stockstat.avgPrice);
         }
 
         this.queryStockStat(index, code, startdate, enddate, callback.bind(this));
@@ -109,6 +126,37 @@ export class StockStat {
         let nRows = table.rows.length;
         for (let i = 0; i < nRows; i++) {
             table.deleteRow(0);
+        }
+    }
+
+    // 更新显示图标的平均线
+    updateChartAvgLine(chart, avgPrice) {
+        if (avgPrice === null) {
+            return;
+        }
+        let option = chart.getOption();
+        const iDayK = 0;
+        const jSupportPrice = 0;
+        let markLine = option.series[iDayK].markLine;
+        markLine.data[jSupportPrice].yAxis = avgPrice;
+
+        // 修改markline的值
+        chart.setOption(option);
+    }
+
+    // 更新建议文字
+    updateAdvice(adviceElement, advice) {
+        if (advice === null) {
+            return;
+        }
+        adviceElement.textContent = advice.message;
+        let risk =advice.risk;
+        if (risk === "High") {
+            adviceElement.className= STYLECLASS_HIGH_RISK;
+        } else if (risk === "Low") {
+            adviceElement.className = STYLECLASS_LOW_RISK;
+        } else if (risk === "Mid") {
+            adviceElement.className = STYLECLASS_MID_RISK;
         }
     }
 }

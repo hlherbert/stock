@@ -5,6 +5,9 @@ import {
     StringUtil
 } from './common/stringutil';
 
+// 股票统计作为StockHistory的子模块载入
+import {StockStat} from './stock-stat';
+
 // 常量定义，只在本文件内有效
 const iDayK = 0;
 const iMA5 = 1;
@@ -21,10 +24,9 @@ const jClosePrice = 2;
 const jLowPrice = 3;
 const jHighPrice = 4;
 
-const upColor = '#ec0000';
-const upBorderColor = '#8A0000';
-const downColor = '#00da3c';
-const downBorderColor = '#008F28';
+// 主题
+// default vintage dark macarons infographic shine roma
+const chartTheme = "default";
 
 export class StockHistory {
     constructor() {
@@ -178,9 +180,9 @@ export class StockHistory {
                 link: {
                     xAxisIndex: 'all'
                 },
-                label: {
-                    backgroundColor: '#777'
-                }
+                // label: {
+                //     backgroundColor: '#777'
+                // }
             },
             grid: [{
                     left: '10%',
@@ -273,13 +275,66 @@ export class StockHistory {
                     name: '日K',
                     type: 'candlestick',
                     data: this.data0.values,
-                    itemStyle: {
-                        normal: {
-                            color: upColor,
-                            color0: downColor,
-                            borderColor: upBorderColor,
-                            borderColor0: downBorderColor
-                        }
+                    markLine: {
+                        symbol: "none", //去掉警戒线最后面的箭头
+                        label: {
+                            position: "start" //将警示值放在哪个位置，三个值“start”,"middle","end"  开始  中点 结束
+                        },
+                        data: [{
+                                name: '支撑价',
+                                silent: true, //鼠标悬停事件  true没有，false有
+                                lineStyle: { 
+                                    //警戒线的样式  ，虚实  颜色
+                                    type: "solid",
+                                    color: "green",
+                                    width: 1
+                                },
+                                label: {
+                                    // 标题 值
+                                    formatter:"{b}:{c}"
+                                },
+                                yAxis: 0 // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
+                            },
+                            {
+                                type: 'average',
+                                name: '平均',
+                                silent: true,
+                                lineStyle: {
+                                    type: "solid",
+                                    color: "blue",
+                                    width: 1
+                                },
+                                label: {
+                                    formatter:"{b}:{c}"
+                                }
+                            },
+                            {
+                                type: 'min',
+                                name: '最低',
+                                silent: true,
+                                lineStyle: {
+                                    type: "solid",
+                                    color: "yellow",
+                                    width: 1
+                                },
+                                label: {
+                                    formatter:"{b}:{c}"
+                                }
+                            },
+                            {
+                                type: 'max',
+                                name: '最高',
+                                silent: true,
+                                lineStyle: {
+                                    type: "solid",
+                                    color: "yellow",
+                                    width: 1
+                                },
+                                label: {
+                                    formatter:"{b}:{c}"
+                                }
+                            }
+                        ]
                     }
                 },
                 {
@@ -345,6 +400,8 @@ export class StockHistory {
         this.inputName;
         this.btnQuery;
         this.chartHistory;
+
+        this.stockStat = new StockStat();
     }
 
     // HTML页面加载后初始化
@@ -374,9 +431,11 @@ export class StockHistory {
         this.btnQuery.addEventListener('click', this.onBtnQueryClick.bind(this));
 
         // 图表
-        this.chartHistory = echarts.init(document.querySelector('#chart-history'));
+        this.chartHistory = echarts.init(document.querySelector('#chart-history'), chartTheme);
         this.initCodeOptions(this.codelist, this.stockmetas);
         this.initChart(this.chartHistory, this.option0);
+
+        this.stockStat.init(document,this.chartHistory);
     }
 
     // 股票代码改变
@@ -522,7 +581,7 @@ export class StockHistory {
                 return;
             }
 
-            let optionNew = this.option0;
+            let optionNew = chart.getOption(); //this.option0; 避免每次把markline覆盖了
             // 更新标题
             let stockName = this.queryStockName(code);
             optionNew.title.text = StringUtil.stringFormat('代码：{0} 名称：{1}', code, stockName)

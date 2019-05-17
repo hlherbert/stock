@@ -156,7 +156,7 @@ button {
 
 .chart {
   width: 90%;
-  height: 500px;
+  height: 800px;
   border: 1px solid black;
 }
 
@@ -232,4 +232,17 @@ tbody {
 
 tfoot {
   font-weight: bold;
+}
+
+/* 风险的颜色 */
+.high-risk {
+  color: red;
+}
+
+.low-risk {
+  color: greenyellow;
+}
+
+.mid-risk {
+  color: yellow;
 }

@@ -2,8 +2,8 @@ package com.hl.stock.core.server.controller.analysis;
 
 
 import com.hl.stock.core.base.analysis.StockAnalysis;
-import com.hl.stock.core.base.analysis.StockStat;
-import com.hl.stock.core.base.analysis.StockStatIndex;
+import com.hl.stock.core.base.analysis.stat.StockStat;
+import com.hl.stock.core.base.analysis.stat.StockStatIndex;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,9 +23,13 @@ public class StockAnalysisController {
     private StockAnalysis stockAnalysis;
 
     /**
-     * 提交补录任务
-     *
-     * @return 补录任务id
+     * 统计股票数据
+     * @param index 统计指标
+     * @param code 编码
+     * @param start 起始时间
+     * @param end 终止时间
+     * @return 统计结果
+     * @throws ParseException
      */
     @GetMapping("/stock/analysis/stat")
     public StockStat stat(

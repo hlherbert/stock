@@ -1,4 +1,4 @@
-package com.hl.stock.core.base.analysis;
+package com.hl.stock.core.base.analysis.stat;
 
 import com.hl.stock.core.base.model.StockData;
 

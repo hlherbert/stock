@@ -1,7 +1,7 @@
 package com.hl.stock.core.base.download;
 
+import com.hl.stock.core.base.config.StockConfig;
 import com.hl.stock.core.base.data.StockDao;
-import com.hl.stock.core.base.exception.StockErrorCode;
 import com.hl.stock.core.base.model.StockData;
 import com.hl.stock.core.base.model.StockMeta;
 import com.hl.stock.core.base.model.StockZone;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,11 +40,8 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
     @Autowired
     private StockTaskManager stockTaskManager;
 
-    /**
-     * 下载数据的起始时间
-     */
-    @Value("${stock.task.StockDownloadTask.downloadAllStockHistoryData.startDate}")
-    private String historyStartDateStr;
+    @Autowired
+    private StockConfig stockConfig;
 
     /**
      * 日期属性格式
@@ -124,13 +120,7 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
      * @return 默认的下载开始时间
      */
     private Date getDefaultHistoryStartDate() {
-        Date historyStartDate = null;
-        try {
-            historyStartDate = dateFormat.parse(historyStartDateStr);
-        } catch (ParseException e) {
-            StockErrorCode.ParseStockStartDateFail.error(e);
-        }
-        return historyStartDate;
+        return stockConfig.getDefaultHistoryStartDate();
     }
 
     @Override
@@ -170,7 +160,7 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
                     String code = meta.getCode();
 
                     Date lastDate = stockDao.lastDateOfData(code);
-                    lastDate = new Date(lastDate.getTime() + DateTimeUtils.ONE_DAY_MILLISECONDS);
+                    lastDate = DateTimeUtils.dateAfterDays(lastDate, 1);
 
                     // 如果从数据库里没有查到该股票的最后一天数据，则起始时间设置为配置中的数据开始时间
                     if (lastDate == null) {

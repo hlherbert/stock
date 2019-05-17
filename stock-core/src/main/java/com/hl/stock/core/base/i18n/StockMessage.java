@@ -16,6 +16,10 @@ public enum StockMessage {
     ComplementAllStockHistoryDataTaskEnabled("任务已启用：自动补录所有股票历史数据"),
     ComplementAllStockHistoryDataTaskDisabled("任务已禁用：自动补录所有股票历史数据"),
 
+    AdviceUnexceptable("信息不全，无法给出建议"),
+    AdvicePriceRateHigh("溢价比高于阈值, 高风险."),
+    AdvicePriceRateLow("溢价比低于阈值, 低风险，建议抄底."),
+    AdvicePriceRateMid("溢价比在正常范围内, 建议观望.")
     ;
 
 

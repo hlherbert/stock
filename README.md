@@ -20,21 +20,29 @@
 * E1.3 寻找绩优股
 寻找发行至今年化收益率最高的股票
 
-## 安装
-* 安装mysql(5.6以上版本). root用户密码设置为root
-* 初始化DB：执行initdb.bat
-* 启动本程序
-* 登陆: 浏览器输入localhost:8080
 
 ## 编译和打包
+
 ### 后端
 用Idea打开，并使用gradle构建build.gradle。自动下载依赖等
+
 ### 前端
 安装node.js
+* 安装vscode javascript相关插件， beautify插件
 * 用vscode打开resource/static目录
-* 安装依赖包(webpack, babel, echarts, jquery等，详见package.json): 进入resource/static目录后，执行 npm install
+* 安装依赖包(webpack, babel, echarts, jquery等，详见package.bat): 进入resource/static目录后，执行 package.bat里的命令。
 * 编译js：目录下执行：webpack。会将所有js合成为一个dist/bundle.js (webpack配置详见webpack.config.js)
 * 各个html中引用的就是该bundle.js
+
+### 数据库
+* 安装mysql(5.6以上版本). root用户密码设置为root
+* 初始化DB：执行initdb.bat
+
+## 运行
+* IDEA中调试启动本程序
+* 登陆: 浏览器输入localhost:8080
+* 如果数据库中无股票数据，进入数据菜单，执行数据补录
+
 
 ## 实现方法
 ### 基本功能

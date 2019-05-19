@@ -2,6 +2,7 @@ package com.hl.stock.core.server.controller.analysis;
 
 
 import com.hl.stock.core.base.analysis.StockAnalysis;
+import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.stat.StockStat;
 import com.hl.stock.core.base.analysis.stat.StockStatIndex;
 import com.hl.stock.core.common.util.DateTimeUtils;
@@ -42,4 +43,9 @@ public class StockAnalysisController {
         return stockAnalysis.stat(index, code, startDate, endDate);
     }
 
+    @GetMapping("/stock/analysis/advice")
+    public StockAdvice advice(@RequestParam("code") String code, @RequestParam("buyDate") String buyDate) throws ParseException {
+        Date buyDateV = DateTimeUtils.fromString(DateTimeUtils.yyyyMMdd, buyDate);
+        return stockAnalysis.advice(code, buyDateV);
+    }
 }

@@ -33,7 +33,7 @@ export class StockStat {
         this.inputCode = document.querySelector('#input-code');
         this.inputStart = document.querySelector('#input-start');
         this.inputEnd = document.querySelector('#input-end');
-        this.pAdvice =  document.querySelector('#p-advice');
+        this.pAdvice = document.querySelector('#p-advice');
 
         // 查询按钮
         this.btnQuery = document.querySelector('#btn-query');
@@ -50,6 +50,9 @@ export class StockStat {
 
         // 查询股票统计信息并显示在图表里
         this.updateCurStatTable();
+
+        // 给出建议
+        this.updateCurAdvice();
     }
 
     // 统计指标改变
@@ -64,6 +67,17 @@ export class StockStat {
         jQuery.get(url)
             .done(function (stockstat) {
                 callback(stockstat);
+            })
+            .fail(function () {
+                callback(null);
+            });
+    }
+
+    queryAdvice(code, buyDate, callback) {
+        let url = StringUtil.stringFormat('/stock/analysis/advice?code={0}&buyDate={1}', code, buyDate);
+        jQuery.get(url)
+            .done(function (advice) {
+                callback(advice);
             })
             .fail(function () {
                 callback(null);
@@ -109,11 +123,8 @@ export class StockStat {
             insertDataRow('最低', stockstat.low);
             insertDataRow('最高', stockstat.high);
             row = table.insertRow(table.rows.length);
-            row.innerHTML = StringUtil.stringFormat('<th>均价</th><td>{0}</td><td colspan="2">{1}</td>', "-", (stockstat.avgPrice !== null)?stockstat.avgPrice:"-");
+            row.innerHTML = StringUtil.stringFormat('<th>均价</th><td>{0}</td><td colspan="2">{1}</td>', "-", (stockstat.avgPrice !== null) ? stockstat.avgPrice : "-");
 
-            // 更新建议
-            this.updateAdvice(this.pAdvice, stockstat.advice);
-            
             // 更新echart里的平均线
             this.updateChartAvgLine(this.chartHistory, stockstat.avgPrice);
         }
@@ -144,19 +155,32 @@ export class StockStat {
         chart.setOption(option);
     }
 
+    // 更新建议
+    updateCurAdvice() {
+        // 更新建议
+        let code = this.inputCode.value; //当前股票编码
+        let buydate = this.inputEnd.value;
+
+        this.updateAdvice(this.pAdvice, code, buyDate);
+    }
+
     // 更新建议文字
-    updateAdvice(adviceElement, advice) {
-        if (advice === null) {
-            return;
+    updateAdvice(adviceElement, code, buyDate) {
+        let callback = function (advice) {
+            if (advice === null) {
+                return;
+            }
+
+            adviceElement.textContent = advice.message;
+            let risk = advice.risk;
+            if (risk === "High") {
+                adviceElement.className = STYLECLASS_HIGH_RISK;
+            } else if (risk === "Low") {
+                adviceElement.className = STYLECLASS_LOW_RISK;
+            } else if (risk === "Mid") {
+                adviceElement.className = STYLECLASS_MID_RISK;
+            }
         }
-        adviceElement.textContent = advice.message;
-        let risk =advice.risk;
-        if (risk === "High") {
-            adviceElement.className= STYLECLASS_HIGH_RISK;
-        } else if (risk === "Low") {
-            adviceElement.className = STYLECLASS_LOW_RISK;
-        } else if (risk === "Mid") {
-            adviceElement.className = STYLECLASS_MID_RISK;
-        }
+        queryAdvice(code, buyDate, callback.bind(this));
     }
 }

@@ -66,7 +66,7 @@ public class StockAnalysis {
      * @param buyDate 购买日期
      * @return 建议
      */
-    public StockAdvice giveAdvice(String code, Date buyDate) {
+    public StockAdvice advice(String code, Date buyDate) {
         return bestStrategy.advice(code, buyDate);
     }
 

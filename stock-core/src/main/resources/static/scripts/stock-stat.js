@@ -159,7 +159,7 @@ export class StockStat {
     updateCurAdvice() {
         // 更新建议
         let code = this.inputCode.value; //当前股票编码
-        let buydate = this.inputEnd.value;
+        let buyDate = this.inputEnd.value;
 
         this.updateAdvice(this.pAdvice, code, buyDate);
     }
@@ -171,7 +171,10 @@ export class StockStat {
                 return;
             }
 
+            // 建议文字内容
             adviceElement.textContent = advice.message;
+
+            // 根据风险设置文字风格
             let risk = advice.risk;
             if (risk === "High") {
                 adviceElement.className = STYLECLASS_HIGH_RISK;
@@ -181,6 +184,6 @@ export class StockStat {
                 adviceElement.className = STYLECLASS_MID_RISK;
             }
         }
-        queryAdvice(code, buyDate, callback.bind(this));
+        this.queryAdvice(code, buyDate, callback.bind(this));
     }
 }

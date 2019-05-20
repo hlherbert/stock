@@ -1,4 +1,4 @@
-package com.hl.stock.core.base.analysis;
+package com.hl.stock.core.base.analysis.emulate;
 
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.advice.StockAdviceStrategy;
@@ -25,7 +25,7 @@ public class StockStrategyEmulator {
     /**
      * 模拟交易的时间间隔
      */
-    private static final int EXPERIMENT_DAY_STEP = 10;
+    private static final int EXPERIMENT_DAY_STEP = 90;
     @Autowired
     private StockAdvisor stockAdvisor;
     @Autowired

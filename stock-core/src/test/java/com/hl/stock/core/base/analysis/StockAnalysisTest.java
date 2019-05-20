@@ -8,6 +8,8 @@ import com.hl.stock.core.common.util.DateTimeUtils;
 import com.hl.stock.core.common.util.JsonUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -15,10 +17,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class StockAnalysisTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(StockAnalysisTest.class);
 
     @Autowired
     private StockAnalysis stockAnalysis;
@@ -43,5 +48,15 @@ public class StockAnalysisTest {
     public void suggestStocks() {
         List<StockAdvice> stocksAdvices = stockAnalysis.suggestStocks(new Date());
         System.out.println(JsonUtils.toPrettyJson(stocksAdvices));
+    }
+
+    @Test
+    public void validate() {
+        List<StockAdvice> stocksAdvices = stockAnalysis.suggestStocks(new Date());
+        stocksAdvices = stocksAdvices.stream().limit(10).collect(Collectors.toList());
+        logger.error(JsonUtils.toPrettyJson(stocksAdvices));
+
+        //StockValidateResult v = stockAnalysis.validateBestStrategy();
+        //logger.error(JsonUtils.toPrettyJson(v));
     }
 }

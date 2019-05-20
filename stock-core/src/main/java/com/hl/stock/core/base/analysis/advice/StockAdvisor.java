@@ -5,9 +5,9 @@ import com.hl.stock.core.base.model.StockMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 买股建议器
@@ -29,20 +29,12 @@ public class StockAdvisor {
         // 获取所有股票信息
         List<StockMeta> metas = stockDao.loadMeta();
 
-        List<StockAdvice> advices = new ArrayList<>();
-        for (StockMeta meta : metas) {
-            StockAdvice advice = strategy.advice(meta.getCode(), buyDate);
-
-            if (advice.isSuggest()) {
-                advices.add(advice);
-                System.err.println("[TEST-HL] advice:" + meta.getCode() + ": " + meta.getName());
-            } else {
-                System.err.println("[TEST-HL] not advice:" + meta.getCode() + ": " + meta.getName());
-            }
-        }
+        List<StockAdvice> advices = metas.parallelStream()
+                .map(meta -> strategy.advice(meta.getCode(), buyDate))
+                .filter(advice -> advice.isSuggest()).collect(Collectors.toList());
 
         // 按照利润率从高到低排序
-        advices.sort((o1, o2) -> Double.compare(o1.getProfitRate(), o2.getProfitRate()));
+        advices.sort((o1, o2) -> Double.compare(o2.getProfitRate(), o1.getProfitRate()));
 
         return advices;
     }

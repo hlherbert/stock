@@ -3,9 +3,11 @@ package com.hl.stock.core.base.analysis;
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.advice.StockAdviceStrategy;
 import com.hl.stock.core.base.analysis.advice.StockAdvisor;
+import com.hl.stock.core.base.analysis.emulate.StockStrategyEmulator;
 import com.hl.stock.core.base.analysis.stat.StockStat;
 import com.hl.stock.core.base.analysis.stat.StockStatIndex;
 import com.hl.stock.core.base.analysis.stat.StockStator;
+import com.hl.stock.core.base.analysis.validate.StockValidateResult;
 import com.hl.stock.core.base.analysis.validate.StockValidator;
 import com.hl.stock.core.base.data.StockDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,4 +82,12 @@ public class StockAnalysis {
         return stockAdvisor.suggestStocks(buyDate, bestStrategy);
     }
 
+    /**
+     * 验证最优策略
+     *
+     * @return 验证结果
+     */
+    public StockValidateResult validateBestStrategy() {
+        return stockStrategyEmulator.emulateAndValidate(bestStrategy);
+    }
 }

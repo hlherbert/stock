@@ -1,6 +1,6 @@
 package com.hl.stock.core.base.analysis.advice;
 
-import com.hl.stock.core.base.analysis.advice.strategy.StockStrategy;
+import com.hl.stock.core.base.analysis.strategy.StockStrategy;
 import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.base.model.StockMeta;
 import org.springframework.beans.factory.annotation.Autowired;

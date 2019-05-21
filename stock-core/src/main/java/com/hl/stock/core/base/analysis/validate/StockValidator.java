@@ -1,9 +1,11 @@
 package com.hl.stock.core.base.analysis.validate;
 
-import com.hl.stock.core.base.analysis.advice.strategy.StockStrategy;
+import com.hl.stock.core.base.analysis.strategy.StockStrategy;
 import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.base.model.StockData;
 import com.hl.stock.core.common.util.DateTimeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +17,7 @@ import java.util.List;
 public class StockValidator {
 
     /**
-     * 验证交易周期T，D日卖出后，D+T卖出 30天
+     * 验证交易周期T，D日卖出后，D+T卖出
      */
     private static final int VALID_TRANSACTION_CYCLE = 30;
 
@@ -24,13 +26,15 @@ public class StockValidator {
      */
     private static final double VALID_PROFIT_RATE_THRESHOLD = 0.1 / 365 * VALID_TRANSACTION_CYCLE;
 
+    private static final Logger logger = LoggerFactory.getLogger(StockValidator.class);
+
     @Autowired
     private StockDao stockDao;
 
     /**
      * 验证策略的有效性
      * 验证方式：
-     * 在buyDate买入该股票， [buyDate, buyData+strategy.sellDaysFromBuy日] 这段时间，是否有某一天的利润率能够高于阈值 strategy.validProfitRate
+     * 在buyDate买入该股票， [buyDate, buyData+T日] 这段时间，是否有某一天的利润率能够高于阈值 profitRateThreshold
      *
      * @param code     待验证股票样本
      * @param buyDate  验证的购买日期
@@ -73,6 +77,8 @@ public class StockValidator {
                 nPass++;
             }
             nTotal++;
+
+            //logger.info("### Validate Strategy: {}, buyDate: {}, code: {}, PassRate: {}", strategy.desc(), buyDate, code, nPass/nTotal);
         }
         result.setPassed(nPass);
         result.setTotal(nTotal);

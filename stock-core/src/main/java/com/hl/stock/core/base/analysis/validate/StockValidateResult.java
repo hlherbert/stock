@@ -7,30 +7,30 @@ public class StockValidateResult {
     /**
      * 参与验证总样本数
      */
-    private int total;
+    private long total;
 
     /**
      * 通过验证样本数
      */
-    private int passed;
+    private long passed;
 
-    public int getTotal() {
+    public long getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(long total) {
         this.total = total;
     }
 
-    public int getPassed() {
+    public long getPassed() {
         return passed;
     }
 
-    public void setPassed(int passed) {
+    public void setPassed(long passed) {
         this.passed = passed;
     }
 
-    public int getFail() {
+    public long getFail() {
         return total - passed;
     }
 

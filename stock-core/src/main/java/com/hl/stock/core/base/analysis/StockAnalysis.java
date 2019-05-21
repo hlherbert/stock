@@ -2,12 +2,12 @@ package com.hl.stock.core.base.analysis;
 
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.advice.StockAdvisor;
-import com.hl.stock.core.base.analysis.advice.strategy.StockStrategy;
 import com.hl.stock.core.base.analysis.emulate.StockStrategyEmulator;
 import com.hl.stock.core.base.analysis.stat.StockStat;
 import com.hl.stock.core.base.analysis.stat.StockStatIndex;
 import com.hl.stock.core.base.analysis.stat.StockStator;
-import com.hl.stock.core.base.analysis.validate.StockValidateResult;
+import com.hl.stock.core.base.analysis.strategy.StockStrategy;
+import com.hl.stock.core.base.analysis.strategy.StockStrategyFactory;
 import com.hl.stock.core.base.analysis.validate.StockValidator;
 import com.hl.stock.core.base.data.StockDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +37,18 @@ public class StockAnalysis {
     @Autowired
     private StockValidator stockValidator;
 
+    @Autowired
+    private StockStrategyFactory stockStrategyFactory;
+
     private StockStrategyEmulator stockStrategyEmulator;
 
-    // 最优选股策略
-    private StockStrategy bestStrategy;
+    // 默认选股策略
+    private StockStrategy strategy;
 
     @Autowired
     public void setStockStrategyEmulator(StockStrategyEmulator stockStrategyEmulator) {
         this.stockStrategyEmulator = stockStrategyEmulator;
-        bestStrategy = stockStrategyEmulator.findBestStrategy();
+        strategy = stockStrategyFactory.getDefault();
     }
 
     /**
@@ -62,32 +65,32 @@ public class StockAnalysis {
     }
 
     /**
-     * 使用最优策略，给出建议是否应该在当天买这支股票
+     * 使用默认策略，给出建议是否应该在当天买这支股票
      *
      * @param code    股票
      * @param buyDate 购买日期
      * @return 建议
      */
     public StockAdvice advice(String code, Date buyDate) {
-        return bestStrategy.advice(code, buyDate);
+        return strategy.advice(code, buyDate);
     }
 
     /**
-     * 使用最优策略，推荐可以购买的股票
+     * 使用默认策略，推荐可以购买的股票
      *
      * @param buyDate 买入日期
      * @return 推荐股票清单，按照利润率从高到底排序
      */
     public List<StockAdvice> suggestStocks(Date buyDate) {
-        return stockAdvisor.suggestStocks(buyDate, bestStrategy);
+        return stockAdvisor.suggestStocks(buyDate, strategy);
     }
 
     /**
-     * 验证最优策略
+     * 寻找最优策略
      *
      * @return 验证结果
      */
-    public StockValidateResult validateBestStrategy() {
-        return stockStrategyEmulator.emulateAndValidate(bestStrategy);
+    public StockStrategy findBestStrategy() {
+        return stockStrategyEmulator.findBestStrategy();
     }
 }

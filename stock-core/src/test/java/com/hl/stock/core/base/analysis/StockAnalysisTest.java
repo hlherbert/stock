@@ -3,6 +3,7 @@ package com.hl.stock.core.base.analysis;
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.stat.StockStat;
 import com.hl.stock.core.base.analysis.stat.StockStatIndex;
+import com.hl.stock.core.base.analysis.strategy.StockStrategy;
 import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import com.hl.stock.core.common.util.JsonUtils;
@@ -58,5 +59,11 @@ public class StockAnalysisTest {
 
         //StockValidateResult v = stockAnalysis.validateBestStrategy();
         //logger.error(JsonUtils.toPrettyJson(v));
+    }
+
+    @Test
+    public void findBestStrategy() {
+        StockStrategy bestStrategy = stockAnalysis.findBestStrategy();
+        logger.error(JsonUtils.toPrettyJson(bestStrategy));
     }
 }

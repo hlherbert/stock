@@ -25,8 +25,10 @@ public enum StockMessage {
     AdviceGrowSpeedLow("增长速度高于阈值, 低风险，建议抄底."),
     AdviceGrowSpeedMid("增长速度在正常范围内, 建议观望."),
 
-    StrategyDefault("默认策略. 利润率=(supportPrice - curPrice) / curPrice. 溢价比=curPrice / supportPrice. " +
-            "溢价比<0.5为低风险, >1为高风险"),
+    StrategyPriceRate("溢价比策略. 溢价比=当前价格/支撑价格. 年化利润率=溢价比/时间差*365天." +
+            "溢价比<0.5为低风险, >1为高风险."),
+    StrategyGrowSpeed("增长速度策略. 增长速度=(当前价格-首日价格)/首日价格/时间差*365天. 利润率=增长速度." +
+            "增长速度>0.1为低风险, <-0.1为高风险."),
     ;
 
 

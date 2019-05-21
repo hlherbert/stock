@@ -1,4 +1,4 @@
-package com.hl.stock.core.base.analysis.advice.strategy;
+package com.hl.stock.core.base.analysis.strategy;
 
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.stat.StockStat;
@@ -10,6 +10,7 @@ import com.hl.stock.core.base.i18n.StockMessage;
 import com.hl.stock.core.base.model.StockData;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,8 @@ import java.util.List;
  * 默认股票策略
  * 按照 溢价比
  */
-public class DefaultStockStrategy extends StockStrategy {
+@Component
+public class PriceRateStrategy extends StockStrategy {
     /**
      * 溢价比高位阈值
      */
@@ -39,7 +41,7 @@ public class DefaultStockStrategy extends StockStrategy {
     @Autowired
     private StockConfig stockConfig;
 
-    public DefaultStockStrategy() {
+    public PriceRateStrategy() {
     }
 
     /**
@@ -89,6 +91,7 @@ public class DefaultStockStrategy extends StockStrategy {
                 risk = StockAdvice.Risk.Mid;
                 msg = StockMessage.AdvicePriceRateMid.toString();
             }
+            msg = desc() + " | " + msg;
             return new StockAdvice(code, msg, profitRate, risk, suggest(risk));
         } catch (Exception e) {
             // 遇到异常，不可预期
@@ -98,6 +101,6 @@ public class DefaultStockStrategy extends StockStrategy {
 
     @Override
     public String desc() {
-        return StockMessage.StrategyDefault.toString();
+        return StockMessage.StrategyPriceRate.toString();
     }
 }

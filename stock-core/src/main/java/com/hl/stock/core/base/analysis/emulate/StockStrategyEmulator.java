@@ -2,12 +2,14 @@ package com.hl.stock.core.base.analysis.emulate;
 
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.advice.StockAdvisor;
-import com.hl.stock.core.base.analysis.advice.strategy.StockStrategy;
-import com.hl.stock.core.base.analysis.advice.strategy.StockStrategyFactory;
+import com.hl.stock.core.base.analysis.strategy.StockStrategy;
+import com.hl.stock.core.base.analysis.strategy.StockStrategyFactory;
 import com.hl.stock.core.base.analysis.validate.StockValidateResult;
 import com.hl.stock.core.base.analysis.validate.StockValidator;
 import com.hl.stock.core.base.config.StockConfig;
 import com.hl.stock.core.common.util.DateTimeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,9 @@ public class StockStrategyEmulator {
      * 模拟交易的时间间隔
      */
     private static final int EXPERIMENT_DAY_STEP = 90;
+
+    private static final Logger logger = LoggerFactory.getLogger(StockStrategyEmulator.class);
+
     @Autowired
     private StockAdvisor stockAdvisor;
     @Autowired
@@ -45,8 +50,10 @@ public class StockStrategyEmulator {
         Date startDate = stockConfig.getDefaultHistoryStartDate();
         Date endDate = new Date();
         List<Date> experimentDays = new ArrayList<>();
-        for (Date d = startDate; d.before(endDate); d = DateTimeUtils.dateAfterDays(d, EXPERIMENT_DAY_STEP)) {
+        Date d = startDate;
+        while (d.before(endDate)) {
             experimentDays.add(d);
+            d = DateTimeUtils.dateAfterDays(d, EXPERIMENT_DAY_STEP);
         }
         return experimentDays;
     }
@@ -60,15 +67,19 @@ public class StockStrategyEmulator {
     public StockValidateResult emulateAndValidate(StockStrategy strategy) {
         StockValidateResult totalValidateResult = new StockValidateResult();
 
-        // 时间范围： 生成模拟交易的日期, 假装在这些日期进行股票交易
+        // 时间范围： 生成模拟交易的日期t0,t1,t2,...ti..., 假装在这些日期进行股票交易
         List<Date> experimentDays = genExperimentDays(); //待生成
 
         for (Date buyDate : experimentDays) {
-            // 空间范围： 从所有股票中找出推荐股
+            // 空间范围： 在模拟交易日ti, 从所有股票中找出推荐股集合Si
             List<StockAdvice> advices = stockAdvisor.suggestStocks(buyDate, strategy);
             List<String> codes = advices.stream().map(advice -> advice.getCode()).collect(Collectors.toList());
+
+            // 验证：在ti买入，ti+T后卖出，收益率>阈值
             StockValidateResult validateResult = stockValidator.validateStrategy(codes, buyDate, strategy);
             totalValidateResult.mergeResult(validateResult);
+
+            logger.info("## Valid Strategy: {}, buyDate: {}, PassRate: {}", strategy.desc(), buyDate, totalValidateResult.passRate());
         }
 
         return totalValidateResult;
@@ -80,7 +91,19 @@ public class StockStrategyEmulator {
      * @return 最优策略
      */
     public StockStrategy findBestStrategy() {
-        return stockStrategyFactory.createDefault();
-        // TODO: 现在暂时返回默认策略。下一步使用模拟的方式找到最优策略
+        List<StockStrategy> strategies = stockStrategyFactory.getAllStrategies();
+        StockStrategy bestStrategy = null;
+        double bestPassRate = 0;
+        for (StockStrategy strategy : strategies) {
+            StockValidateResult validResult = emulateAndValidate(strategy);
+            double strategyPassRate = validResult.passRate();
+            logger.info("Strategy: {}, PassRate: {}", strategy.desc(), strategyPassRate);
+            if (strategyPassRate > bestPassRate) {
+                bestStrategy = strategy;
+                bestPassRate = strategyPassRate;
+            }
+        }
+
+        return bestStrategy;
     }
 }

@@ -13,7 +13,7 @@ public class DateTimeUtils {
     /**
      * 一天的毫秒数
      */
-    public static final int ONE_DAY_MILLISECONDS = 1 * 24 * 60 * 60 * 1000;
+    public static final long ONE_DAY_MILLISECONDS = 1 * 24 * 60 * 60 * 1000;
 
     /**
      * 一年的天数
@@ -33,7 +33,7 @@ public class DateTimeUtils {
      * @return baseDate + days后的日期
      */
     public static Date dateAfterDays(Date baseDate, int days) {
-        return new Date(baseDate.getTime() + DateTimeUtils.ONE_DAY_MILLISECONDS);
+        return new Date(baseDate.getTime() + days * DateTimeUtils.ONE_DAY_MILLISECONDS);
     }
 
     /**
@@ -44,6 +44,6 @@ public class DateTimeUtils {
      * @return 天数差额
      */
     public static int daysBetween(Date firstDay, Date lastDay) {
-        return (int) (lastDay.getTime() - firstDay.getTime()) / ONE_DAY_MILLISECONDS;
+        return (int) ((lastDay.getTime() - firstDay.getTime()) / ONE_DAY_MILLISECONDS);
     }
 }

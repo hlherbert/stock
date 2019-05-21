@@ -1,4 +1,4 @@
-package com.hl.stock.core.base.analysis.advice.strategy;
+package com.hl.stock.core.base.analysis.strategy;
 
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.stat.StockStator;
@@ -8,13 +8,15 @@ import com.hl.stock.core.base.i18n.StockMessage;
 import com.hl.stock.core.base.model.StockData;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 /**
  * 增长速度策略
  */
-public class GrowSpeedStockStrategy extends StockStrategy {
+@Component
+public class GrowSpeedStrategy extends StockStrategy {
     /**
      * 速率高位阈值
      */
@@ -35,7 +37,7 @@ public class GrowSpeedStockStrategy extends StockStrategy {
     @Autowired
     private StockConfig stockConfig;
 
-    public GrowSpeedStockStrategy() {
+    public GrowSpeedStrategy() {
     }
 
     /**
@@ -97,6 +99,7 @@ public class GrowSpeedStockStrategy extends StockStrategy {
                 risk = StockAdvice.Risk.Mid;
                 msg = StockMessage.AdviceGrowSpeedMid.toString();
             }
+            msg = desc() + " | " + msg;
             return new StockAdvice(code, msg, profitRate, risk, suggest(risk));
         } catch (Exception e) {
             // 遇到异常，不可预期
@@ -106,6 +109,6 @@ public class GrowSpeedStockStrategy extends StockStrategy {
 
     @Override
     public String desc() {
-        return StockMessage.StrategyDefault.toString();
+        return StockMessage.StrategyGrowSpeed.toString();
     }
 }

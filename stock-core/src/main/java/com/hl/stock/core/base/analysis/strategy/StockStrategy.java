@@ -1,4 +1,4 @@
-package com.hl.stock.core.base.analysis.advice.strategy;
+package com.hl.stock.core.base.analysis.strategy;
 
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 

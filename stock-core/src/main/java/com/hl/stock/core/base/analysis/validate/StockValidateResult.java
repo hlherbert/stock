@@ -1,9 +1,19 @@
 package com.hl.stock.core.base.analysis.validate;
 
+import java.util.Date;
+
 /**
  * 策略有效性，验证结果
  */
 public class StockValidateResult {
+    /**
+     * 策略名
+     */
+    private String strategy;
+    /**
+     * 时间
+     */
+    private Date date;
     /**
      * 参与验证总样本数
      */
@@ -13,6 +23,29 @@ public class StockValidateResult {
      * 通过验证样本数
      */
     private long passed;
+
+    public StockValidateResult(String strategy, Date date) {
+        this.date = date;
+        this.strategy = strategy;
+    }
+
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(String strategy) {
+        this.strategy = strategy;
+    }
+
 
     public long getTotal() {
         return total;

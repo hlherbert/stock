@@ -20,7 +20,7 @@ import java.util.List;
  * 按照 溢价比
  */
 @Component
-public class PriceRateStrategy extends StockStrategy {
+public class PriceRateStrategy implements StockStrategy {
     /**
      * 溢价比高位阈值
      */
@@ -102,5 +102,10 @@ public class PriceRateStrategy extends StockStrategy {
     @Override
     public String desc() {
         return StockMessage.StrategyPriceRate.toString();
+    }
+
+    @Override
+    public String name() {
+        return "PriceRate";
     }
 }

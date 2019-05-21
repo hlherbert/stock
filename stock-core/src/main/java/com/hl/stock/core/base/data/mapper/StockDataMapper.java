@@ -37,7 +37,7 @@ public interface StockDataMapper {
 
     @Select("SELECT * FROM stock_data WHERE code = #{code} AND date = #{date}")
     @Results
-    StockData getPoint(String code, Date date);
+    StockData getPoint(@Param("code") String code, @Param("date") Date date);
 
     @Select("SELECT EXISTS(SELECT 1 FROM stock_data WHERE code=#{code})")
     @Results
@@ -45,7 +45,7 @@ public interface StockDataMapper {
 
     @Select("SELECT date FROM stock_data WHERE code=#{code} ORDER BY date LIMIT 1")
     @Results
-    Date firstDateOfSeries(String code);
+    Date firstDateOfSeries(@Param("code") String code);
 
     @Select("SELECT date FROM stock_data WHERE code=#{code} ORDER BY date DESC LIMIT 1")
     @Results
@@ -84,6 +84,6 @@ public interface StockDataMapper {
     @Delete("DELETE FROM stock_data WHERE code = #{code} AND date = #{date}")
     void deletePoint(String code, Date date);
 
-    @Delete("DELETE FROM stock_data WHERE date > now()")
+    @Delete("DELETE FROM stock_data WHERE date > now() OR date < '2000-01-01' ")
     void washData();
 }

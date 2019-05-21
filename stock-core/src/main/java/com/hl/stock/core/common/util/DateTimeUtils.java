@@ -25,6 +25,16 @@ public class DateTimeUtils {
         return dateFormat.parse(str);
     }
 
+    public static String formatDate(String format, Date date) {
+        DateFormat dateFormat = new SimpleDateFormat(format);
+        return dateFormat.format(date);
+    }
+
+    public static String standardDate(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat(yyyy_MM_dd);
+        return dateFormat.format(date);
+    }
+
     /**
      * 计算baseDate + days的日期
      *

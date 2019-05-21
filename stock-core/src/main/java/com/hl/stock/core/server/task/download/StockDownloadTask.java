@@ -1,11 +1,10 @@
 package com.hl.stock.core.server.task.download;
 
+import com.hl.stock.core.base.config.StockConfig;
 import com.hl.stock.core.base.download.StockDownloadSaver;
-import com.hl.stock.core.base.i18n.StockMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -25,41 +24,20 @@ public class StockDownloadTask {
     @Autowired
     private StockDownloadSaver stockDownloadSaver;
 
+    @Autowired
+    private StockConfig stockConfig;
+
     private boolean historyTaskStart = false;
 
     private boolean historyComplementTaskStart = false;
 
-    private boolean enableDownHistory;
-
-    private boolean enableComplementHistory;
-
-    @Value("${stock.task.downloadAllStockHistoryData.autostart}")
-    public void setEnableDownHistory(boolean enableDownHistory) {
-        this.enableDownHistory = enableDownHistory;
-        if (enableDownHistory) {
-            logger.info(StockMessage.DownloadAllStockHistoryDataTaskEnabled.toString());
-        } else {
-            logger.info(StockMessage.DownloadAllStockHistoryDataTaskDisabled.toString());
-        }
-    }
-
-    @Value("${stock.task.complementAllStockHistoryData.autostart}")
-    public void setEnableComplementHistory(boolean enableComplementHistory) {
-        this.enableComplementHistory = enableComplementHistory;
-        if (enableComplementHistory) {
-            logger.info(StockMessage.ComplementAllStockHistoryDataTaskEnabled.toString());
-        } else {
-            logger.info(StockMessage.ComplementAllStockHistoryDataTaskDisabled.toString());
-        }
-    }
-
     /**
      * 下载任务
      */
-    @Scheduled(fixedRateString = "${stock.task.StockDownloadTask.downloadAllStockHistoryData.fixedRate}",
-            initialDelayString = "${stock.task.StockDownloadTask.downloadAllStockHistoryData.initialDelay}")
+    @Scheduled(fixedRateString = "${stock.task.default.fixedRate}",
+            initialDelayString = "${stock.task.default.initialDelay}")
     public void downloadAllStockHistoryData() throws ExecutionException, InterruptedException {
-        if (!enableDownHistory) {
+        if (!stockConfig.isEnableDownHistory()) {
             return;
         }
 
@@ -74,10 +52,10 @@ public class StockDownloadTask {
     /**
      * 补录任务
      */
-    @Scheduled(fixedRateString = "${stock.task.StockDownloadTask.downloadAllStockHistoryData.fixedRate}",
-            initialDelayString = "${stock.task.StockDownloadTask.downloadAllStockHistoryData.initialDelay}")
+    @Scheduled(fixedRateString = "${stock.task.default.fixedRate}",
+            initialDelayString = "${stock.task.default.initialDelay}")
     public void complementAllStockHistoryData() {
-        if (!enableComplementHistory) {
+        if (!stockConfig.isEnableComplementHistory()) {
             return;
         }
 

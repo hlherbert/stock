@@ -40,7 +40,7 @@ export class StockData  {
                     .done(function (progress) {
                         that.updateComplementProgress(progress);
                         if (progress === MAX_PROGRESS) {
-                            this.btnComplement.removeAttribute('disabled');
+                            that.btnComplement.removeAttribute('disabled');
                             that.clearInterval(intervalId);
                         }
                     });

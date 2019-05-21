@@ -160,13 +160,12 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
                     String code = meta.getCode();
 
                     Date lastDate = stockDao.lastDateOfData(code);
-                    lastDate = DateTimeUtils.dateAfterDays(lastDate, 1);
-
                     // 如果从数据库里没有查到该股票的最后一天数据，则起始时间设置为配置中的数据开始时间
                     if (lastDate == null) {
                         lastDate = historyStartDateFinal;
+                    } else {
+                        lastDate = DateTimeUtils.dateAfterDays(lastDate, 1);
                     }
-
                     // 下载从lastDate到histroyEndDate的日期的数据
                     try {
                         Thread.sleep(delayPerStock);

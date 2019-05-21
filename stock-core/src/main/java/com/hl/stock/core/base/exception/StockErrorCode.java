@@ -30,6 +30,7 @@ public enum StockErrorCode {
     DownloadStockDataTimeout(30006, "DownloadStockDataTimeout"),            // 下载股票数据超时
 
     // data 40001-49999
+    LoadStockDataFail(40001, "LoadStockDataFail"),        // 读取股票数据失败
 
     // query 50001-59999
 

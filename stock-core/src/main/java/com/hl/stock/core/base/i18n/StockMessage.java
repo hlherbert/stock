@@ -15,6 +15,8 @@ public enum StockMessage {
     DownloadAllStockHistoryDataTaskDisabled("任务已禁用：自动下载所有股票历史数据"),
     ComplementAllStockHistoryDataTaskEnabled("任务已启用：自动补录所有股票历史数据"),
     ComplementAllStockHistoryDataTaskDisabled("任务已禁用：自动补录所有股票历史数据"),
+    FindBestStrategyTaskEnabled("任务已启用：自动寻找最优策略"),
+    FindBestStrategyTaskDisabled("任务已禁用：自动寻找最优策略"),
 
     AdviceUnexceptable("信息不全，无法给出建议"),
     AdvicePriceRateHigh("溢价比高于阈值, 高风险."),

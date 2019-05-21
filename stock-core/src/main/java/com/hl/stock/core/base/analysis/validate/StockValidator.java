@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 // finished
 @Component
@@ -64,24 +65,26 @@ public class StockValidator {
      * @return
      */
     public StockValidateResult validateStrategy(List<String> codes, Date buyDate, StockStrategy strategy) {
-        StockValidateResult result = new StockValidateResult();
-        int nPass = 0;
-        int nTotal = 0;
-        for (String code : codes) {
+        StockValidateResult result = new StockValidateResult(strategy.name(), buyDate);
+        AtomicInteger nPass = new AtomicInteger(0);
+        AtomicInteger nTotal = new AtomicInteger(0);
+
+        // 内部由于涉及到DB IO + CPU，采用多线程提高资源利用率
+        codes.parallelStream().forEach(code -> {
             Boolean pass = validateStrategy(code, buyDate, strategy);
             if (pass == null) {
                 // 无效样本不纳入统计
-                continue;
+                return;
             }
             if (pass) {
-                nPass++;
+                nPass.incrementAndGet();
             }
-            nTotal++;
-
+            nTotal.incrementAndGet();
             //logger.info("### Validate Strategy: {}, buyDate: {}, code: {}, PassRate: {}", strategy.desc(), buyDate, code, nPass/nTotal);
-        }
-        result.setPassed(nPass);
-        result.setTotal(nTotal);
+        });
+
+        result.setPassed(nPass.get());
+        result.setTotal(nTotal.get());
         return result;
     }
 

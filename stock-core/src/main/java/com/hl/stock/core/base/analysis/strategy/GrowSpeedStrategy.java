@@ -4,6 +4,7 @@ import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.stat.StockStator;
 import com.hl.stock.core.base.config.StockConfig;
 import com.hl.stock.core.base.data.StockDao;
+import com.hl.stock.core.base.exception.StockErrorCode;
 import com.hl.stock.core.base.i18n.StockMessage;
 import com.hl.stock.core.base.model.StockData;
 import com.hl.stock.core.common.util.DateTimeUtils;
@@ -16,7 +17,7 @@ import java.util.Date;
  * 增长速度策略
  */
 @Component
-public class GrowSpeedStrategy extends StockStrategy {
+public class GrowSpeedStrategy implements StockStrategy {
     /**
      * 速率高位阈值
      */
@@ -52,7 +53,12 @@ public class GrowSpeedStrategy extends StockStrategy {
 
     @Override
     public StockAdvice advice(String code, Date buyDate) {
-        Date firstDay = stockDao.firstDateOfData(code);
+        Date firstDay = null;
+        try {
+            firstDay = stockDao.firstDateOfData(code);
+        } catch (Exception e) {
+            StockErrorCode.LoadStockDataFail.error();
+        }
         if (firstDay == null) {
             // 无数据
             return StockAdvice.Unexceptable;
@@ -110,5 +116,10 @@ public class GrowSpeedStrategy extends StockStrategy {
     @Override
     public String desc() {
         return StockMessage.StrategyGrowSpeed.toString();
+    }
+
+    @Override
+    public String name() {
+        return "GrowSpeed";
     }
 }

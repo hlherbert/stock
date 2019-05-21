@@ -8,8 +8,7 @@ import com.hl.stock.core.base.i18n.StockMessage;
 public class StockAdvice {
 
     public static final StockAdvice Unexceptable = new StockAdvice(
-            null, StockMessage.AdviceUnexceptable.toString(), 0,
-            0, Risk.High, false
+            null, StockMessage.AdviceUnexceptable.toString(), 0, Risk.High, false
     );
     /**
      * 推荐股票的编码
@@ -20,11 +19,7 @@ public class StockAdvice {
      */
     private String message;
     /**
-     * 溢价比 = 当前价格/支撑价格
-     */
-    private double priceRate;
-    /**
-     * 预期利润率= (卖出价格-当前价格)/当前价格
+     * 预期利润率（年化) = (卖出价格-当前价格)/当前价格/(卖出时间-买入时间)*365
      */
     private double profitRate;
     /**
@@ -40,10 +35,9 @@ public class StockAdvice {
     }
 
 
-    public StockAdvice(String code, String message, double priceRate, double profitRate, Risk risk, boolean suggest) {
+    public StockAdvice(String code, String message, double profitRate, Risk risk, boolean suggest) {
         this.code = code;
         this.message = message;
-        this.priceRate = priceRate;
         this.profitRate = profitRate;
         this.risk = risk;
         this.suggest = suggest;
@@ -55,14 +49,6 @@ public class StockAdvice {
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public double getPriceRate() {
-        return priceRate;
-    }
-
-    public void setPriceRate(double priceRate) {
-        this.priceRate = priceRate;
     }
 
     public double getProfitRate() {

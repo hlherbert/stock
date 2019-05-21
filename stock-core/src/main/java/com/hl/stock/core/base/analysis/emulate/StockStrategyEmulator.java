@@ -1,9 +1,9 @@
 package com.hl.stock.core.base.analysis.emulate;
 
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
-import com.hl.stock.core.base.analysis.advice.StockAdviceStrategy;
-import com.hl.stock.core.base.analysis.advice.StockAdviceStrategyFactory;
 import com.hl.stock.core.base.analysis.advice.StockAdvisor;
+import com.hl.stock.core.base.analysis.advice.strategy.StockStrategy;
+import com.hl.stock.core.base.analysis.advice.strategy.StockStrategyFactory;
 import com.hl.stock.core.base.analysis.validate.StockValidateResult;
 import com.hl.stock.core.base.analysis.validate.StockValidator;
 import com.hl.stock.core.base.config.StockConfig;
@@ -33,7 +33,7 @@ public class StockStrategyEmulator {
     @Autowired
     private StockConfig stockConfig;
     @Autowired
-    private StockAdviceStrategyFactory stockAdviceStrategyFactory;
+    private StockStrategyFactory stockStrategyFactory;
 
     /**
      * 生成模拟交易的日期
@@ -57,7 +57,7 @@ public class StockStrategyEmulator {
      * @param strategy 选股策略
      * @return 策略有效性
      */
-    public StockValidateResult emulateAndValidate(StockAdviceStrategy strategy) {
+    public StockValidateResult emulateAndValidate(StockStrategy strategy) {
         StockValidateResult totalValidateResult = new StockValidateResult();
 
         // 时间范围： 生成模拟交易的日期, 假装在这些日期进行股票交易
@@ -79,8 +79,8 @@ public class StockStrategyEmulator {
      *
      * @return 最优策略
      */
-    public StockAdviceStrategy findBestStrategy() {
-        return stockAdviceStrategyFactory.createDefault();
+    public StockStrategy findBestStrategy() {
+        return stockStrategyFactory.createDefault();
         // TODO: 现在暂时返回默认策略。下一步使用模拟的方式找到最优策略
     }
 }

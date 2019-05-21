@@ -1,5 +1,6 @@
-package com.hl.stock.core.base.analysis.advice;
+package com.hl.stock.core.base.analysis.advice.strategy;
 
+import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.stat.StockStat;
 import com.hl.stock.core.base.analysis.stat.StockStatIndex;
 import com.hl.stock.core.base.analysis.stat.StockStator;
@@ -7,14 +8,17 @@ import com.hl.stock.core.base.config.StockConfig;
 import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.base.i18n.StockMessage;
 import com.hl.stock.core.base.model.StockData;
+import com.hl.stock.core.common.util.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 
-@Component
-public class DefaultStockAdviceStrategy extends StockAdviceStrategy {
+/**
+ * 默认股票策略
+ * 按照 溢价比
+ */
+public class DefaultStockStrategy extends StockStrategy {
     /**
      * 溢价比高位阈值
      */
@@ -35,9 +39,7 @@ public class DefaultStockAdviceStrategy extends StockAdviceStrategy {
     @Autowired
     private StockConfig stockConfig;
 
-    public DefaultStockAdviceStrategy() {
-        sellDaysFromBuy = StockAdviceStrategy.DEFAULT_SELL_DAYS_FROM_BUY;
-        validProfitRate = StockAdviceStrategy.DEFAULT_VALID_PROFIT_RATE;
+    public DefaultStockStrategy() {
     }
 
     /**
@@ -53,7 +55,8 @@ public class DefaultStockAdviceStrategy extends StockAdviceStrategy {
     @Override
     public StockAdvice advice(String code, Date buyDate) {
         Date startDate = stockConfig.getDefaultHistoryStartDate();
-        Date endDate = new Date();
+        Date endDate = buyDate;
+
         // 先统计, 看溢价比
         List<StockData> datas = stockDao.loadData(code, startDate, endDate);
         StockStat stat = stockStator.stat(StockStatIndex.ClosePrice, datas);
@@ -61,8 +64,8 @@ public class DefaultStockAdviceStrategy extends StockAdviceStrategy {
             return StockAdvice.Unexceptable;
         }
 
-        StockAdvice.Risk risk = StockAdvice.Risk.Mid;  //风险
-        String msg = StockAdvice.Unexceptable.getMessage();         //建议
+        StockAdvice.Risk risk;  //风险
+        String msg;         //建议
 
         try {
             // 股票平均价(支撑价)
@@ -70,7 +73,8 @@ public class DefaultStockAdviceStrategy extends StockAdviceStrategy {
             // 股票当前价位(最近收盘价)
             double curPrice = stat.getLatest().getClosePrice();
             double priceRate = curPrice / supportPrice;       //溢价比
-            double profitRate = (supportPrice - curPrice) / curPrice; // 预期收益率
+            double profitRate = (supportPrice - curPrice) / curPrice
+                    / DateTimeUtils.daysBetween(stat.getEarliest().getDate(), stat.getLatest().getDate()) * DateTimeUtils.ONE_YEAR_DAYS; // 预期年化利率
 
             if (priceRate > PRICE_RATE_HIGH) {
                 // 溢价比大于阈值， 高风险
@@ -85,10 +89,15 @@ public class DefaultStockAdviceStrategy extends StockAdviceStrategy {
                 risk = StockAdvice.Risk.Mid;
                 msg = StockMessage.AdvicePriceRateMid.toString();
             }
-            return new StockAdvice(code, msg, priceRate, profitRate, risk, suggest(risk));
+            return new StockAdvice(code, msg, profitRate, risk, suggest(risk));
         } catch (Exception e) {
             // 遇到异常，不可预期
             return StockAdvice.Unexceptable;
         }
+    }
+
+    @Override
+    public String desc() {
+        return StockMessage.StrategyDefault.toString();
     }
 }

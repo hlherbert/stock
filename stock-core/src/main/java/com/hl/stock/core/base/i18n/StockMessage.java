@@ -19,7 +19,14 @@ public enum StockMessage {
     AdviceUnexceptable("信息不全，无法给出建议"),
     AdvicePriceRateHigh("溢价比高于阈值, 高风险."),
     AdvicePriceRateLow("溢价比低于阈值, 低风险，建议抄底."),
-    AdvicePriceRateMid("溢价比在正常范围内, 建议观望.")
+    AdvicePriceRateMid("溢价比在正常范围内, 建议观望."),
+
+    AdviceGrowSpeedHigh("增长速度低于阈值, 高风险."),
+    AdviceGrowSpeedLow("增长速度高于阈值, 低风险，建议抄底."),
+    AdviceGrowSpeedMid("增长速度在正常范围内, 建议观望."),
+
+    StrategyDefault("默认策略. 利润率=(supportPrice - curPrice) / curPrice. 溢价比=curPrice / supportPrice. " +
+            "溢价比<0.5为低风险, >1为高风险"),
     ;
 
 

@@ -1,5 +1,6 @@
 package com.hl.stock.core.base.analysis.advice;
 
+import com.hl.stock.core.base.analysis.advice.strategy.StockStrategy;
 import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.base.model.StockMeta;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class StockAdvisor {
      * @param strategy 选股策略
      * @return 推荐股票清单，按照利润率从高到底排序
      */
-    public List<StockAdvice> suggestStocks(Date buyDate, StockAdviceStrategy strategy) {
+    public List<StockAdvice> suggestStocks(Date buyDate, StockStrategy strategy) {
         // 获取所有股票信息
         List<StockMeta> metas = stockDao.loadMeta();
 

@@ -1,8 +1,8 @@
 package com.hl.stock.core.base.analysis;
 
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
-import com.hl.stock.core.base.analysis.advice.StockAdviceStrategy;
 import com.hl.stock.core.base.analysis.advice.StockAdvisor;
+import com.hl.stock.core.base.analysis.advice.strategy.StockStrategy;
 import com.hl.stock.core.base.analysis.emulate.StockStrategyEmulator;
 import com.hl.stock.core.base.analysis.stat.StockStat;
 import com.hl.stock.core.base.analysis.stat.StockStatIndex;
@@ -40,7 +40,7 @@ public class StockAnalysis {
     private StockStrategyEmulator stockStrategyEmulator;
 
     // 最优选股策略
-    private StockAdviceStrategy bestStrategy;
+    private StockStrategy bestStrategy;
 
     @Autowired
     public void setStockStrategyEmulator(StockStrategyEmulator stockStrategyEmulator) {

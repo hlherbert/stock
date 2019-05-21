@@ -43,9 +43,17 @@ public interface StockDataMapper {
     @Results
     boolean hasSeries(String code);
 
+    @Select("SELECT date FROM stock_data WHERE code=#{code} ORDER BY date LIMIT 1")
+    @Results
+    Date firstDateOfSeries(String code);
+
     @Select("SELECT date FROM stock_data WHERE code=#{code} ORDER BY date DESC LIMIT 1")
     @Results
     Date lastDateOfSeries(String code);
+
+    @Select("SELECT date FROM stock_data WHERE code=#{code} AND date<=#{lastDateLimit} ORDER BY date DESC LIMIT 1")
+    @Results
+    Date lastDateOfSeriesLimit(@Param("code") String code, @Param("lastDateLimit") Date lastDateLimit);
 
     // 避免重复插入 insert ignore into
     @Insert("INSERT IGNORE INTO " +

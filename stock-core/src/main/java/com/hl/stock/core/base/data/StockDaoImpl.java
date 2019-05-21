@@ -9,9 +9,17 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Repository
 public class StockDaoImpl implements StockDao {
+
+    //沪深A股的代码模式， 00，60开头。 非创业板、B股、基金
+    private static final String PATTERN_HU_SHEN_A = "((^00)|(^60)).*";
+
+    //含有错误数据的股票代码 000900~000929
+    private static final String PATTERN_BAD_DATA = "(^0009)[0-2].*";
 
     @Autowired
     private StockMetaMapper stockMetaMapper;
@@ -45,8 +53,19 @@ public class StockDaoImpl implements StockDao {
     }
 
     @Override
+    public StockData loadDataPoint(String code, Date date) {
+        return stockDataMapper.getPoint(code, date);
+    }
+
+    @Override
     public List<StockMeta> loadMeta() {
-        return stockMetaMapper.getAll();
+        List<StockMeta> metas = stockMetaMapper.getAll();
+        // 过滤掉 非创业板、B股、基金
+        return metas.stream()
+                .filter(meta -> (
+                        Pattern.matches(PATTERN_HU_SHEN_A, meta.getCode())
+                                && !Pattern.matches(PATTERN_BAD_DATA, meta.getCode())
+                )).collect(Collectors.toList());
     }
 
     @Override
@@ -55,8 +74,18 @@ public class StockDaoImpl implements StockDao {
     }
 
     @Override
+    public Date firstDateOfData(String code) {
+        return stockDataMapper.firstDateOfSeries(code);
+    }
+
+    @Override
     public Date lastDateOfData(String code) {
         return stockDataMapper.lastDateOfSeries(code);
+    }
+
+    @Override
+    public Date lastDateOfDataLimit(String code, Date lastDateLimit) {
+        return stockDataMapper.lastDateOfSeriesLimit(code, lastDateLimit);
     }
 
     @Override

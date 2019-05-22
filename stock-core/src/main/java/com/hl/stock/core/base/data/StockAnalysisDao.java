@@ -32,6 +32,13 @@ public interface StockAnalysisDao {
     List<StockValidateResult> loadValidateResult(String strategy);
 
     /**
+     * 读取所有股票策略验证结果
+     *
+     * @return
+     */
+    List<StockValidateResult> loadAllValidateResult();
+
+    /**
      * 读取股票策略验证结果 一个点
      *
      * @param strategy

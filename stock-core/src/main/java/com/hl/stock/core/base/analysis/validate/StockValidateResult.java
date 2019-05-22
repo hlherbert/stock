@@ -67,7 +67,7 @@ public class StockValidateResult {
         return total - passed;
     }
 
-    public double passRate() {
+    public double getPassRate() {
         return passed / (double) total;
     }
 

@@ -116,7 +116,7 @@ public class StockStrategyEmulator {
             if (validateResult.getTotal() > 0) {
                 validateResults.add(validateResult);
                 logger.info("## Valid Strategy: {}, buyDate: {}, PassRate: {}, Remain: {}", strategy.name(),
-                        DateTimeUtils.standardDate(buyDate), validateResult.passRate(), remainDays.get());
+                        DateTimeUtils.standardDate(buyDate), validateResult.getPassRate(), remainDays.get());
             }
         }
 
@@ -137,7 +137,7 @@ public class StockStrategyEmulator {
         double bestPassRate = 0;
         for (StockStrategy strategy : strategies) {
             StockValidateResult validResult = emulateAndValidate(strategy);
-            double strategyPassRate = validResult.passRate();
+            double strategyPassRate = validResult.getPassRate();
             logger.info("Strategy: {}, PassRate: {}", strategy.name(), strategyPassRate);
             if (strategyPassRate > bestPassRate) {
                 bestStrategy = strategy;

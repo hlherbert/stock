@@ -8,7 +8,9 @@ import com.hl.stock.core.base.analysis.stat.StockStatIndex;
 import com.hl.stock.core.base.analysis.stat.StockStator;
 import com.hl.stock.core.base.analysis.strategy.StockStrategy;
 import com.hl.stock.core.base.analysis.strategy.StockStrategyFactory;
+import com.hl.stock.core.base.analysis.validate.StockValidateResult;
 import com.hl.stock.core.base.analysis.validate.StockValidator;
+import com.hl.stock.core.base.data.StockAnalysisDao;
 import com.hl.stock.core.base.data.StockDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +42,11 @@ public class StockAnalysis {
     @Autowired
     private StockStrategyFactory stockStrategyFactory;
 
+    @Autowired
     private StockStrategyEmulator stockStrategyEmulator;
+
+    @Autowired
+    private StockAnalysisDao stockAnalysisDao;
 
     // 默认选股策略
     private StockStrategy strategy;
@@ -87,10 +93,19 @@ public class StockAnalysis {
 
     /**
      * 寻找最优策略
-     *
+     * 备注，如果数据库没有记录之前执行的策略验证结果，需要对各个策略进行验证，会花费大量时间。
      * @return 验证结果
      */
     public StockStrategy findBestStrategy() {
         return stockStrategyEmulator.findBestStrategy();
+    }
+
+    /**
+     * 查询所有策略的验证结果
+     *
+     * @return 所有策略的验证结果
+     */
+    public List<StockValidateResult> loadAllStrategyValidateResult() {
+        return stockAnalysisDao.loadAllValidateResult();
     }
 }

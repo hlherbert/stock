@@ -29,6 +29,11 @@ public class StockAnalysisDaoImpl implements StockAnalysisDao {
     }
 
     @Override
+    public List<StockValidateResult> loadAllValidateResult() {
+        return stockValidateResultMapper.getAll();
+    }
+
+    @Override
     public StockValidateResult loadValidateResultPoint(String strategy, Date date) {
         return stockValidateResultMapper.getPoint(strategy, date);
     }

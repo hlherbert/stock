@@ -18,3 +18,6 @@ npm install echarts --save
 npm install jquery --save
 
 npm audit fix
+
+# vscode推荐插件
+# beautify, eslint, tslint, live server, javascirpt code snipptets

@@ -15,7 +15,7 @@ public class StockAdvice {
      */
     private String code;
     /**
-     * 建议内容
+     * 建议内容:点评
      */
     private String message;
     /**

@@ -11,8 +11,18 @@ import {
 // default vintage dark macarons infographic shine roma
 const chartTheme = "default";
 
-const STRATEGY_PRICE_RATE= "PriceRate";
-const STRATEGY_GROW_SPEED= "GrowSpeed";
+const STRATEGY_PRICE_RATE = "PriceRate";
+const STRATEGY_GROW_SPEED = "GrowSpeed";
+
+const MARKLINE = {
+    data: [{
+        type: 'average',
+        name: '平均',
+        label: {
+            formatter: "{b}:{c}"
+        }
+    }]
+}
 
 export class StockAnalysis {
     constructor() {
@@ -36,7 +46,9 @@ export class StockAnalysis {
             toolbox: {
                 feature: {
                     mark: {},
-                    dataView: {readonly:true},
+                    dataView: {
+                        readonly: true
+                    },
                     restore: {},
                     saveAsImage: {}
                 }
@@ -57,58 +69,18 @@ export class StockAnalysis {
                 name: '正确率',
                 type: 'value',
                 axisLabel: {
-                    formatter: function(value) {
-                        return (value*100) + ' %';
+                    formatter: function (value) {
+                        return (value * 100) + ' %';
                     }
                 }
             }],
             series: [{
                     type: 'line',
-                    markLine: {
-                        // symbol: "none", //去掉警戒线最后面的箭头
-                        // label: {
-                        //     position: "start" //将警示值放在哪个位置，三个值“start”,"middle","end"  开始  中点 结束
-                        // },
-                        data: [
-                            {
-                                type: 'average',
-                                name: '平均',
-                                // silent: true,
-                                // lineStyle: {
-                                //     type: "solid",
-                                //     //color: "blue",
-                                //     width: 1
-                                // },
-                                label: {
-                                    formatter:"{b}:{c}"
-                                }
-                            }
-                        ]
-                    }
+                    markLine: MARKLINE
                 },
                 {
                     type: 'line',
-                    markLine: {
-                        // symbol: "none", //去掉警戒线最后面的箭头
-                        // label: {
-                        //     position: "start" //将警示值放在哪个位置，三个值“start”,"middle","end"  开始  中点 结束
-                        // },
-                        data: [
-                            {
-                                type: 'average',
-                                name: '平均',
-                                // silent: true,
-                                // lineStyle: {
-                                //     type: "solid",
-                                //     //color: "blue",
-                                //     width: 1
-                                // },
-                                label: {
-                                    formatter:"{b}:{c}"
-                                }
-                            }
-                        ]
-                    }
+                    markLine: MARKLINE
                 }
             ],
             dataset: {
@@ -117,7 +89,11 @@ export class StockAnalysis {
             }
         };
 
-        this.chart;
+        this.tableStat;
+        this.strategyChart;
+        this.btnStrategyValidate;
+        this.btnSuggest;
+        this.spanSuggestWait;
     }
 
     // HTML页面加载后初始化
@@ -126,9 +102,18 @@ export class StockAnalysis {
             return;
         }
 
-        // 查询按钮
+        // 推荐表格
+        this.tableSuggest = document.querySelector('#table-suggest');
+        this.selStrategy = document.querySelector('#sel-strategy');
+        this.spanSuggestWait = document.querySelector('#span-suggest-wait');
+
+        // 策略验证按钮
         this.btnStrategyValidate = document.querySelector('#btn-strategy-validate');
         this.btnStrategyValidate.addEventListener('click', this.onBtnStrategyValidateClick.bind(this));
+
+        // 推荐按钮
+        this.btnSuggest = document.querySelector('#btn-suggest');
+        this.btnSuggest.addEventListener('click', this.onBtnSuggestClick.bind(this));
 
         this.strategyChart = echarts.init(document.querySelector('#chart-strategy'), chartTheme);
         this.initChart(this.strategyChart, this.option0);
@@ -175,9 +160,11 @@ export class StockAnalysis {
 
             //chart.setOption(optionNew);
             // 局部刷新，性能更高
-            chart.setOption({dataset:{
-                source:dataNew.data
-            }});
+            chart.setOption({
+                dataset: {
+                    source: dataNew.data
+                }
+            });
         }
 
         this.queryAllStrategyValidateResults(callback.bind(this));
@@ -194,7 +181,7 @@ export class StockAnalysis {
 
             let newRow = {};
             let date = StringUtil.dateFormat(dateObj, "yyyy/MM/dd");
-            
+
             if (results[date] != null) {
                 newRow = results[date];
             }
@@ -221,4 +208,73 @@ export class StockAnalysis {
         };
     }
 
+
+    // 推荐按钮按下
+    onBtnSuggestClick(e) {
+        // 阻止默认提交行为
+        e.preventDefault();
+
+        let strategy = this.selStrategy.value; //策略
+
+        // 查询推荐股票并显示在table里
+        this.updateSuggestTable(this.tableSuggest, strategy);
+    }
+
+    // 更新推荐表格
+    updateSuggestTable(table, strategy) {
+        let callback = function (advices) {
+            //重新隐藏请稍等的提示文字
+            this.spanSuggestWait.hidden = true;
+            this.clearTable(table);
+
+            // 插入标题
+            let row = table.insertRow(0);
+            row.innerHTML = "<th>代码</th><th>风险</th><th>预期利润率</th><th>点评</th>";
+
+            if (advices === null || advices === "" || advices.length === 0) {
+                return;
+            }
+
+            // 临时方便函数-插入一行
+            let insertDataRow = function (stockAdvice) {
+                if (stockAdvice === null || stockAdvice === undefined) {
+                    return;
+                }
+                let row = table.insertRow(table.rows.length);
+                row.innerHTML = StringUtil.stringFormat("<th>{0}</th><td>{1}</td><td>{2}</td><td>{3}</td>", stockAdvice.code, stockAdvice.risk, stockAdvice.profitRate, stockAdvice.message);
+            }
+
+            // 插入数据
+            for (let i=0;i<advices.length;i++) {
+                insertDataRow(advices[i]);
+            }
+        }
+
+        // 购买日期设置为今天
+        let buyDate = StringUtil.dateFormat(new Date(), "yyyyMMdd");
+
+        // 显示请稍候的文本
+        this.spanSuggestWait.hidden = false;
+
+        this.querySuggestStocks(buyDate, strategy, callback.bind(this));
+    }
+
+    querySuggestStocks(buyDate, strategy, callback) {
+        let url = StringUtil.stringFormat('/stock/analysis/suggestStocks?buyDate={0}&strategy={1}', buyDate, strategy);
+        jQuery.get(url)
+            .done(function (advices) {
+                callback(advices);
+            })
+            .fail(function () {
+                callback(null);
+            });
+    }
+
+    // 清除表
+    clearTable(table) {
+        let nRows = table.rows.length;
+        for (let i = 0; i < nRows; i++) {
+            table.deleteRow(0);
+        }
+    }
 }

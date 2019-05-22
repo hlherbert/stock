@@ -48,13 +48,15 @@ public class StockAnalysis {
     @Autowired
     private StockAnalysisDao stockAnalysisDao;
 
-    // 默认选股策略
-    private StockStrategy strategy;
+    /**
+     * 默认选股策略
+     */
+    private StockStrategy defaultStrategy;
 
     @Autowired
     public void setStockStrategyEmulator(StockStrategyEmulator stockStrategyEmulator) {
         this.stockStrategyEmulator = stockStrategyEmulator;
-        strategy = stockStrategyFactory.getDefault();
+        defaultStrategy = stockStrategyFactory.getDefault();
     }
 
     /**
@@ -78,16 +80,27 @@ public class StockAnalysis {
      * @return 建议
      */
     public StockAdvice advice(String code, Date buyDate) {
-        return strategy.advice(code, buyDate);
+        return defaultStrategy.advice(code, buyDate);
     }
 
     /**
-     * 使用默认策略，推荐可以购买的股票
+     * 用默认策略，推荐可以购买的股票
      *
      * @param buyDate 买入日期
      * @return 推荐股票清单，按照利润率从高到底排序
      */
     public List<StockAdvice> suggestStocks(Date buyDate) {
+        return stockAdvisor.suggestStocks(buyDate, defaultStrategy);
+    }
+
+    /**
+     * 使用指定策略，推荐可以购买的股票
+     *
+     * @param buyDate 买入日期
+     * @param strategy 策略
+     * @return 推荐股票清单，按照利润率从高到底排序
+     */
+    public List<StockAdvice> suggestStocks(Date buyDate, StockStrategy strategy) {
         return stockAdvisor.suggestStocks(buyDate, strategy);
     }
 

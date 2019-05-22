@@ -5,6 +5,8 @@ import com.hl.stock.core.base.analysis.StockAnalysis;
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.stat.StockStat;
 import com.hl.stock.core.base.analysis.stat.StockStatIndex;
+import com.hl.stock.core.base.analysis.strategy.StockStrategy;
+import com.hl.stock.core.base.analysis.strategy.StockStrategyFactory;
 import com.hl.stock.core.base.analysis.validate.StockValidateResult;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class StockAnalysisController {
 
     @Autowired
     private StockAnalysis stockAnalysis;
+
+    @Autowired
+    private StockStrategyFactory stockStrategyFactory;
 
     /**
      * 统计股票数据
@@ -67,5 +72,19 @@ public class StockAnalysisController {
     @GetMapping("/stock/analysis/validateResults")
     public List<StockValidateResult> loadAllStrategyValidateResult() {
         return stockAnalysis.loadAllStrategyValidateResult();
+    }
+
+    /**
+     * 使用指定策略，推荐可以购买的股票
+     *
+     * @param buyDate      买入日期
+     * @param strategyName 策略名称
+     * @return 推荐股票清单，按照利润率从高到底排序
+     */
+    @GetMapping("/stock/analysis/suggestStocks")
+    public List<StockAdvice> suggestStocks(@RequestParam("buyDate") String buyDate, @RequestParam("strategy") String strategyName) throws ParseException {
+        Date buyDateV = DateTimeUtils.fromString(DateTimeUtils.yyyyMMdd, buyDate);
+        StockStrategy strategy = stockStrategyFactory.getStrategy(strategyName);
+        return stockAnalysis.suggestStocks(buyDateV, strategy);
     }
 }

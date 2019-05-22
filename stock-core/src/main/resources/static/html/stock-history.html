@@ -36,11 +36,12 @@
                 </div>
                 <div>
                     <label for="input-select-code">选择股票代码</label>
-                    <select autofocus id="input-select-code" list="code-list" pattern="[0-9]{6}" required></select>
-                    <!--
+                    <input autofocus id="input-select-code" list="code-list" pattern="[0-9]{6}" required
+                           type="search"></select>
+
                     <datalist id="code-list">
                     </datalist>
-                    -->
+
                     <span aria-live="polite" class="error" id="code-error"></span>
                 </div>
                 <div>

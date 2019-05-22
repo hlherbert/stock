@@ -412,10 +412,11 @@ export class StockHistory {
             return;
         }
         // 股票代码
-        //this.codelist = document.querySelector('#code-list');
-        this.codelist = document.querySelector('#input-select-code');
+        this.codelist = document.querySelector('#code-list');
+        //this.codelist = document.querySelector('#input-select-code');
         this.inputSelectCode = document.querySelector('#input-select-code');
         this.inputSelectCode.addEventListener('change', this.onCodeChange.bind(this));
+        this.inputSelectCode.addEventListener('input', this.onCodeChange.bind(this));
         this.inputCode = document.querySelector('#input-code');
 
         // 起始时间 结束时间

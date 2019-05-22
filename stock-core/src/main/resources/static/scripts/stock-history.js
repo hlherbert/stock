@@ -412,8 +412,8 @@ export class StockHistory {
             return;
         }
         // 股票代码
-        this.codelist = document.querySelector('#code-list');
-        //this.codelist = document.querySelector('#input-select-code');
+        this.codelist = document.querySelector('#code-list'); //输入框模式
+        //this.codelist = document.querySelector('#input-select-code'); //下拉框模式
         this.inputSelectCode = document.querySelector('#input-select-code');
         this.inputSelectCode.addEventListener('change', this.onCodeChange.bind(this));
         this.inputSelectCode.addEventListener('input', this.onCodeChange.bind(this));

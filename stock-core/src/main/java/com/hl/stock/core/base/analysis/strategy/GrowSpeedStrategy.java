@@ -38,6 +38,9 @@ public class GrowSpeedStrategy implements StockStrategy {
     @Autowired
     private StockConfig stockConfig;
 
+    @Autowired
+    private StockAdviceFilter stockAdviceFilter;
+
     public GrowSpeedStrategy() {
     }
 
@@ -106,7 +109,7 @@ public class GrowSpeedStrategy implements StockStrategy {
                 msg = StockMessage.AdviceGrowSpeedMid.toString();
             }
             msg = desc() + " | " + msg;
-            return new StockAdvice(code, msg, profitRate, risk, suggest(risk));
+            return stockAdviceFilter.filterAdvice(new StockAdvice(code, msg, profitRate, risk, suggest(risk)));
         } catch (Exception e) {
             // 遇到异常，不可预期
             return StockAdvice.Unexceptable;

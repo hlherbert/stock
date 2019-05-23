@@ -94,6 +94,7 @@ export class StockAnalysis {
         this.btnStrategyValidate;
         this.btnSuggest;
         this.spanSuggestWait;
+        this.stockmetaMap;
     }
 
     // HTML页面加载后初始化
@@ -117,6 +118,8 @@ export class StockAnalysis {
 
         this.strategyChart = echarts.init(document.querySelector('#chart-strategy'), chartTheme);
         this.initChart(this.strategyChart, this.option0);
+
+        this.stockmetaMap = this.queryStockMetaMap();
     }
 
     // 显示标题，图例和空的坐标轴
@@ -222,10 +225,12 @@ export class StockAnalysis {
 
     // 更新推荐表格
     updateSuggestTable(table, strategy) {
+        let that = this;
+
         let callback = function (advices) {
             //重新隐藏请稍等的提示文字
-            this.spanSuggestWait.hidden = true;
-            this.clearTable(table);
+            that.spanSuggestWait.hidden = true;
+            that.clearTable(table);
 
             // 插入标题
             let row = table.insertRow(0);
@@ -235,13 +240,15 @@ export class StockAnalysis {
                 return;
             }
 
+            
             // 临时方便函数-插入一行
             let insertDataRow = function (stockAdvice) {
                 if (stockAdvice === null || stockAdvice === undefined) {
                     return;
                 }
                 let row = table.insertRow(table.rows.length);
-                row.innerHTML = StringUtil.stringFormat("<th>{0}</th><td>{1}</td><td>{2}</td><td>{3}</td>", stockAdvice.code, stockAdvice.risk, stockAdvice.profitRate, stockAdvice.message);
+                let name = that.findStockName(that.stockmetaMap, stockAdvice.code);
+                row.innerHTML = StringUtil.stringFormat("<td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td>", stockAdvice.code, name, stockAdvice.risk, stockAdvice.profitRate);
             }
 
             // 插入数据
@@ -254,9 +261,8 @@ export class StockAnalysis {
         let buyDate = StringUtil.dateFormat(new Date(), "yyyyMMdd");
 
         // 显示请稍候的文本
-        this.spanSuggestWait.hidden = false;
-
-        this.querySuggestStocks(buyDate, strategy, callback.bind(this));
+        that.spanSuggestWait.hidden = false;
+        that.querySuggestStocks(buyDate, strategy, callback.bind(that));
     }
 
     querySuggestStocks(buyDate, strategy, callback) {
@@ -276,5 +282,32 @@ export class StockAnalysis {
         for (let i = 0; i < nRows; i++) {
             table.deleteRow(0);
         }
+    }
+
+    // 查股票元数据
+    queryStockMetaMap() {
+        let ret = null;
+        jQuery.ajax({
+            type: "get",
+            url: "/stock/meta",
+            data: null,
+            async: false,
+            success: function (data) {
+                ret = data;
+            }
+        });
+
+        let map = [];
+        if (ret != null) {
+            for (let i=0;i<ret.length;i++) {
+                let meta = ret[i];
+                map[meta.code] = meta;
+            }
+        }
+        return map;
+    }
+
+    findStockName(stockmetaMap, code) {
+        return stockmetaMap[code].name;
     }
 }

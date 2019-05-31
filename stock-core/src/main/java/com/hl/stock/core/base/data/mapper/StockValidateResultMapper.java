@@ -11,29 +11,31 @@ import java.util.List;
  */
 @Mapper
 public interface StockValidateResultMapper {
-    @Select("SELECT strategy, date, total, passed FROM stock_validate_result ORDER BY strategy ASC, date ASC")
+    @Select("SELECT strategy, date, total, passed, profitRate FROM stock_validate_result ORDER BY strategy ASC, date ASC")
     @Results({
             @Result(property = "strategy", column = "strategy"),
             @Result(property = "date", column = "date", javaType = Date.class),
             @Result(property = "total", column = "total"),
-            @Result(property = "passed", column = "passed")
+            @Result(property = "passed", column = "passed"),
+            @Result(property = "profitRate", column = "profitRate")
     })
     List<StockValidateResult> getAll();
 
-    @Select("SELECT strategy, date, total, passed FROM stock_validate_result WHERE strategy = #{strategy} ORDER BY date ASC")
+    @Select("SELECT strategy, date, total, passed, profitRate FROM stock_validate_result WHERE strategy = #{strategy} ORDER BY date ASC")
     @Results
     List<StockValidateResult> getSeries(String strategy);
 
-    @Select("SELECT strategy, date, total, passed FROM stock_validate_result WHERE strategy = #{strategy} AND date >= #{startDate} AND date < #{endDate} ORDER BY date ASC")
+    @Select("SELECT strategy, date, total, passed, profitRate FROM stock_validate_result WHERE strategy = #{strategy} AND date >= #{startDate} AND date < #{endDate} ORDER BY date ASC")
     @Results
     List<StockValidateResult> getSeriesByTime(@Param("strategy") String strategy, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
-    @Select("SELECT strategy, date, total, passed FROM stock_validate_result WHERE strategy = #{strategy} AND date = #{date}")
+    @Select("SELECT strategy, date, total, passed,profitRate FROM stock_validate_result WHERE strategy = #{strategy} AND date = #{date}")
     @Results({
             @Result(property = "strategy", column = "strategy"),
             @Result(property = "date", column = "date", javaType = Date.class),
             @Result(property = "total", column = "total"),
-            @Result(property = "passed", column = "passed")
+            @Result(property = "passed", column = "passed"),
+            @Result(property = "profitRate", column = "profitRate")
     })
     StockValidateResult getPoint(@Param("strategy") String strategy, @Param("date") Date date);
 
@@ -43,23 +45,23 @@ public interface StockValidateResultMapper {
 
     // 避免重复插入 insert ignore into
     @Insert("INSERT IGNORE INTO " +
-            " stock_validate_result(date, strategy, total, passed)" +
+            " stock_validate_result(date, strategy, total, passed, profitRate)" +
             " VALUES " +
-            " (#{date}, #{strategy}, #{total}, #{passed})")
+            " (#{date}, #{strategy}, #{total}, #{passed}, #{profitRate})")
     void insert(StockValidateResult stockValidateResult);
 
     @Insert("<script>" +
             "INSERT IGNORE INTO " +
-            " stock_validate_result(date, strategy, total, passed)" +
+            " stock_validate_result(date, strategy, total, passed, profitRate)" +
             " VALUES " +
             "   <foreach collection='stockValidateResults' item='x' index='index' separator=','>" +
-            "   (#{x.date}, #{x.strategy}, #{x.total}, #{x.passed})" +
+            "   (#{x.date}, #{x.strategy}, #{x.total}, #{x.passed}, #{x.profitRate})" +
             "   </foreach>" +
             "</script>")
     void insertBatch(@Param("stockValidateResults") List<StockValidateResult> stockValidateResults);
 
     @Update("UPDATE stock_validate_result SET" +
-            " total=#{total}, passed=#{passed}" +
+            " total=#{total}, passed=#{passed}, profitRate=#{profitRate}" +
             " WHERE strategy = #{strategy} AND date = #{date}")
     void update(StockValidateResult stockValidateResult);
 

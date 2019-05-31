@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `stock_validate_result` (
   `date` DATETIME NULL,
   `total` DECIMAL(10,0) NULL,
   `passed` DECIMAL(10,0) NULL,
+  `profitRate` DECIMAL(10,2) NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `idxUniq` (`strategy` ASC, `date` ASC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

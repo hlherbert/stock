@@ -110,6 +110,7 @@ public class StockStrategyEmulator {
                 validateResult = stockValidator.validateStrategy(codes, buyDate, strategy);
 
                 // 记录到数据库
+                // [debug] logger.debug("total: {}, pr: {}", validateResult.getTotal(),validateResult.getPassRate());
                 recordValidateResult(validateResult);
             }
             // 记录有效验证结果

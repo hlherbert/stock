@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 // finished
@@ -42,7 +44,7 @@ public class StockValidator {
      * @param strategy 推荐策略
      * @return 是否通过验证:  true: pass;  false: fail;  无效样本: null
      */
-    public Boolean validateStrategy(String code, Date buyDate, StockStrategy strategy) {
+    public ValidateResult validateStrategy(String code, Date buyDate, StockStrategy strategy) {
         Date endDate = DateTimeUtils.dateAfterDays(buyDate, VALID_TRANSACTION_CYCLE + 1);
         List<StockData> datas = stockDao.loadData(code, buyDate, endDate);
 
@@ -52,9 +54,18 @@ public class StockValidator {
         }
         double buyPrice = datas.get(0).getClosePrice(); //买入价
         double profitRateThreshold = VALID_PROFIT_RATE_THRESHOLD;
-        return datas.parallelStream().anyMatch(data -> data.getClosePrice() / buyPrice > (profitRateThreshold + 1));
-    }
+        Optional<Double> maxPrice = datas.parallelStream().map(data -> data.getClosePrice()).max(Double::compare);
 
+        if (maxPrice.isPresent()) {
+            double profitRate = maxPrice.get() / buyPrice - 1;
+            return new ValidateResult(profitRate > profitRateThreshold, profitRate);
+        } else {
+            //无数据，算无效样本，不计入结果
+            return null;
+        }
+
+        //return datas.parallelStream().anyMatch(data -> data.getClosePrice() / buyPrice > (profitRateThreshold + 1));
+    }
 
     /**
      * 验证策略的有效性
@@ -68,24 +79,49 @@ public class StockValidator {
         StockValidateResult result = new StockValidateResult(strategy.name(), buyDate);
         AtomicInteger nPass = new AtomicInteger(0);
         AtomicInteger nTotal = new AtomicInteger(0);
+        double totalProfitRate = 0;
+        ConcurrentLinkedQueue<Double> profitRateQueue = new ConcurrentLinkedQueue();
 
         // 内部由于涉及到DB IO + CPU，采用多线程提高资源利用率
         codes.parallelStream().forEach(code -> {
-            Boolean pass = validateStrategy(code, buyDate, strategy);
-            if (pass == null) {
+            //Boolean pass = validateStrategy(code, buyDate, strategy);
+            ValidateResult res = validateStrategy(code, buyDate, strategy);
+
+            if (res == null) {
                 // 无效样本不纳入统计
                 return;
             }
-            if (pass) {
+            if (res.passed) {
                 nPass.incrementAndGet();
             }
             nTotal.incrementAndGet();
             //logger.info("### Validate Strategy: {}, buyDate: {}, code: {}, PassRate: {}", strategy.desc(), buyDate, code, nPass/nTotal);
+            profitRateQueue.add(res.profitRate);
         });
 
+        for (Double p : profitRateQueue) {
+            totalProfitRate += p;
+        }
         result.setPassed(nPass.get());
         result.setTotal(nTotal.get());
+        result.setProfitRate((result.getTotal() > 0) ? totalProfitRate / result.getTotal() : 0);
         return result;
+    }
+
+    /**
+     * 单个股票的中间结果
+     */
+    private class ValidateResult {
+        //是否通过
+        boolean passed;
+
+        //利润率
+        double profitRate;
+
+        ValidateResult(boolean passed, double profitRate) {
+            this.passed = passed;
+            this.profitRate = profitRate;
+        }
     }
 
 

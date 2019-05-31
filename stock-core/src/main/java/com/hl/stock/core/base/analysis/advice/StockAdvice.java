@@ -87,8 +87,18 @@ public class StockAdvice {
      * 风险
      */
     public enum Risk {
-        Low,
-        Mid,
-        High
+        Low(0),
+        Mid(1),
+        High(2);
+
+        private int value;
+
+        Risk(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
     }
 }

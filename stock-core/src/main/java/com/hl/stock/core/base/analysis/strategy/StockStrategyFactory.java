@@ -16,16 +16,19 @@ public class StockStrategyFactory {
     @Autowired
     private StockStrategy growSpeedStrategy;
 
+    @Autowired
+    private StockStrategy wisdomOfCrowdStrategy;
+
     public StockStrategy getDefault() {
         return priceRateStrategy;
     }
 
     public List<StockStrategy> getAllStrategies() {
-        return Arrays.asList(priceRateStrategy, growSpeedStrategy);
+        return Arrays.asList(priceRateStrategy, growSpeedStrategy, wisdomOfCrowdStrategy);
     }
 
     public StockStrategy getStrategy(String name) {
-        final Map<String, StockStrategy> strategyMap = Arrays.asList(priceRateStrategy, growSpeedStrategy).stream().collect(Collectors.toMap(
+        final Map<String, StockStrategy> strategyMap = getAllStrategies().stream().collect(Collectors.toMap(
                 strategy -> strategy.name(), strategy -> strategy
         ));
         return strategyMap.get(name);

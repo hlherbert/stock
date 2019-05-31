@@ -24,6 +24,11 @@ public class StockValidateResult {
      */
     private long passed;
 
+    /**
+     * 平均收益率
+     */
+    private double profitRate;
+
     public StockValidateResult(String strategy, Date date) {
         this.date = date;
         this.strategy = strategy;
@@ -71,10 +76,22 @@ public class StockValidateResult {
         return passed / (double) total;
     }
 
+    public double getProfitRate() {
+        return profitRate;
+    }
+
+    public void setProfitRate(double profitRate) {
+        this.profitRate = profitRate;
+    }
+
     /**
      * 将其他结果，合并到本结果对象
      */
     public void mergeResult(StockValidateResult result) {
+        this.profitRate = (this.total * this.profitRate + result.total * result.profitRate) / (this.total + result.total);
+        if (Double.isNaN(this.profitRate)) {
+            this.profitRate = 0;
+        }
         this.total += result.total;
         this.passed += result.passed;
     }

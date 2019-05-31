@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `stock_data` (
 
 CREATE TABLE IF NOT EXISTS `stock_validate_result` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `strategy` VARCHAR(10) NULL,
+  `strategy` VARCHAR(20) NULL,
   `date` DATETIME NULL,
   `total` DECIMAL(10,0) NULL,
   `passed` DECIMAL(10,0) NULL,

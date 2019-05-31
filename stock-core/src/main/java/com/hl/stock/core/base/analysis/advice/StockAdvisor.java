@@ -3,6 +3,8 @@ package com.hl.stock.core.base.analysis.advice;
 import com.hl.stock.core.base.analysis.strategy.StockStrategy;
 import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.base.model.StockMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 @Component
 public class StockAdvisor {
 
+    private static Logger logger = LoggerFactory.getLogger(StockAdvisor.class);
     @Autowired
     StockDao stockDao;
 
@@ -29,11 +32,22 @@ public class StockAdvisor {
     public List<StockAdvice> suggestStocks(Date buyDate, StockStrategy strategy) {
         // 获取所有股票信息
         List<StockMeta> metas = stockDao.loadMeta();
+        logger.info("metas size:{}", metas.size());
+
+//        List<StockAdvice> advices = new ArrayList<>();
+//        for (StockMeta meta:metas) {
+//            StockAdvice advice = strategy.advice(meta.getCode(), buyDate);
+//            if (advice.isSuggest()){
+//                advices.add(advice);
+//            }
+//            logger.info("advice code: {}",advice.getCode());
+//        }
 
         List<StockAdvice> advices = metas.parallelStream()
                 .map(meta -> strategy.advice(meta.getCode(), buyDate))
                 .filter(advice -> advice.isSuggest()).collect(Collectors.toList());
 
+        logger.info("advices size:{}", advices.size());
         // 按照利润率从高到低排序
         advices.sort((o1, o2) -> Double.compare(o2.getProfitRate(), o1.getProfitRate()));
 

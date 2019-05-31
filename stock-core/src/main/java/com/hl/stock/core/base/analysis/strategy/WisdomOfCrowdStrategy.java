@@ -14,11 +14,12 @@ import java.util.stream.Collectors;
  */
 @Component
 public class WisdomOfCrowdStrategy implements StockStrategy {
-    @Autowired
-    private StockAdviceFilter stockAdviceFilter;
 
     @Autowired
-    private StockStrategyFactory stockStrategyFactory;
+    private transient StockAdviceFilter stockAdviceFilter;
+
+    @Autowired
+    private transient StockStrategyFactory stockStrategyFactory;
 
     public WisdomOfCrowdStrategy() {
     }

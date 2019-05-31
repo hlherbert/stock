@@ -13,6 +13,7 @@ const chartTheme = "default";
 
 const STRATEGY_PRICE_RATE = "PriceRate";
 const STRATEGY_GROW_SPEED = "GrowSpeed";
+const STRATEGY_WISDOM_OF_CROWD = "WisdomOfCrowd";
 
 const MARKLINE = {
     data: [{
@@ -28,9 +29,9 @@ export class StockAnalysis {
     constructor() {
         // 数据意义：日期、priceRate策略正确率,  growSpeed策略正确率
         this.data0 = [
-            ['2013/1/21', 0.1, 0.4],
-            ['2013/1/22', 0.2, 0.5],
-            ['2013/1/23', 0.3, 0.6]
+            ['2013/1/21', 0.1, 0.4, 0.5],
+            ['2013/1/22', 0.2, 0.5, 0.6],
+            ['2013/1/23', 0.3, 0.6, 0.7]
         ];
 
         this.option0 = {
@@ -81,10 +82,14 @@ export class StockAnalysis {
                 {
                     type: 'line',
                     markLine: MARKLINE
+                },
+                {
+                    type: 'line',
+                    markLine: MARKLINE
                 }
             ],
             dataset: {
-                dimensions: ['date', 'priceRate', 'growSpeed'],
+                dimensions: ['date', 'priceRate', 'growSpeed', 'wisdomOfCrowd'],
                 source: this.data0
             }
         };
@@ -196,6 +201,8 @@ export class StockAnalysis {
                 newRow.priceRate = passRate;
             } else if (strategy === STRATEGY_GROW_SPEED) {
                 newRow.growSpeed = passRate;
+            } else if (strategy === STRATEGY_WISDOM_OF_CROWD) {
+                newRow.wisdomOfCrowd = passRate;
             }
             results[date] = newRow;
         }
@@ -234,7 +241,7 @@ export class StockAnalysis {
 
             // 插入标题
             let row = table.insertRow(0);
-            row.innerHTML = "<th>代码</th><th>风险</th><th>预期利润率</th><th>点评</th>";
+            row.innerHTML = "<th>代码</th><th>名称</th><th>风险</th><th>预期利润率</th>";
 
             if (advices === null || advices === "" || advices.length === 0) {
                 return;

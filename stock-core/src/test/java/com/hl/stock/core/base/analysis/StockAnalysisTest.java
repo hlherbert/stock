@@ -84,6 +84,6 @@ public class StockAnalysisTest {
     @Test
     public void findBestStrategy() {
         StockStrategy bestStrategy = stockAnalysis.findBestStrategy();
-        logger.error(JsonUtils.toPrettyJson(bestStrategy));
+        logger.error("bestStrategy={}", bestStrategy.name());
     }
 }

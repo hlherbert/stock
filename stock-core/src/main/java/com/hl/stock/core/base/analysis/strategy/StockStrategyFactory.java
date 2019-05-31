@@ -20,7 +20,7 @@ public class StockStrategyFactory {
     private StockStrategy wisdomOfCrowdStrategy;
 
     public StockStrategy getDefault() {
-        return priceRateStrategy;
+        return wisdomOfCrowdStrategy;
     }
 
     public List<StockStrategy> getAllStrategies() {

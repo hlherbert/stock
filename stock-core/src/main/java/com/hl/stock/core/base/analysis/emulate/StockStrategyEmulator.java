@@ -100,7 +100,7 @@ public class StockStrategyEmulator {
             StockValidateResult validateResult = stockAnalysisDao.loadValidateResultPoint(strategy.name(), buyDate);
             if (validateResult != null) {
                 // 如果已经有数据了，则无需计算该点
-                logger.info("validate point has exists, date={}", DateTimeUtils.standardDate(buyDate));
+                logger.debug("validate point has exists, date={}", DateTimeUtils.standardDate(buyDate));
             } else {
                 // 空间范围： 在模拟交易日ti, 从所有股票中找出推荐股集合Si
                 List<StockAdvice> advices = stockAdvisor.suggestStocks(buyDate, strategy);
@@ -110,13 +110,13 @@ public class StockStrategyEmulator {
                 validateResult = stockValidator.validateStrategy(codes, buyDate, strategy);
 
                 // 记录到数据库
-                // [debug] logger.debug("total: {}, pr: {}", validateResult.getTotal(),validateResult.getPassRate());
+                logger.info("total: {}, pr: {}, buyDate:{}", validateResult.getTotal(), validateResult.getPassRate(), buyDate);
                 recordValidateResult(validateResult);
             }
             // 记录有效验证结果
             if (validateResult.getTotal() > 0) {
                 validateResults.add(validateResult);
-                logger.info("## Valid Strategy: {}, buyDate: {}, PassRate: {}, Remain: {}", strategy.name(),
+                logger.debug("## Valid Strategy: {}, buyDate: {}, PassRate: {}, Remain: {}", strategy.name(),
                         DateTimeUtils.standardDate(buyDate), validateResult.getPassRate(), remainDays.get());
             }
         }
@@ -137,9 +137,10 @@ public class StockStrategyEmulator {
         StockStrategy bestStrategy = null;
         double bestPassRate = 0;
         for (StockStrategy strategy : strategies) {
+            logger.info("strategy name:{}", strategy.name());
             StockValidateResult validResult = emulateAndValidate(strategy);
             double strategyPassRate = validResult.getPassRate();
-            logger.info("Strategy: {}, PassRate: {}", strategy.name(), strategyPassRate);
+            logger.info("Strategy: {}, PassRate: {}, ProfitRate: {}", strategy.name(), strategyPassRate, validResult.getProfitRate());
             if (strategyPassRate > bestPassRate) {
                 bestStrategy = strategy;
                 bestPassRate = strategyPassRate;

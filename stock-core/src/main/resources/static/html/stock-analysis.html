@@ -48,7 +48,9 @@
                     <option value="WisdomOfCrowd">群体智慧策略</option>
                 </select>
                 <button id="btn-suggest" type="button">推荐</button>
-                <span hidden id="span-suggest-wait">运算中，请稍候</span>
+                <label for="progress-suggest">进度</label>
+                <progress id='progress-suggest' max="100" value="0"></progress>
+                <span id='progress-suggest-val'>未开始</span>
             </div>
             <table id="table-suggest">
                 <caption>推荐结果</caption>

@@ -5,9 +5,6 @@ import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.base.model.StockData;
 import com.hl.stock.core.base.model.StockMeta;
 import com.hl.stock.core.base.model.StockZone;
-import com.hl.stock.core.base.task.StockTask;
-import com.hl.stock.core.base.task.StockTaskManager;
-import com.hl.stock.core.base.task.StockTaskType;
 import com.hl.stock.core.common.perf.PerformanceMeasure;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import org.slf4j.Logger;
@@ -21,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -38,10 +34,10 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
     private StockDownloader stockDownloader;
 
     @Autowired
-    private StockTaskManager stockTaskManager;
+    private StockConfig stockConfig;
 
     @Autowired
-    private StockConfig stockConfig;
+    private StockComplementTask stockComplementTask;
 
     /**
      * 日期属性格式
@@ -124,66 +120,8 @@ public class StockDownloadSaverImpl implements StockDownloadSaver {
     }
 
     @Override
-    public String complementAllStockHistoryData() {
-        // 检查同类任务是否已经存在
-        StockTask taskOld = stockTaskManager.getFirstTaskByType(StockTaskType.ComplementStockHistoryData);
-        if (taskOld != null) {
-            logger.warn("task (id={}, type={}) already exists. do not repeat it.", taskOld.getId(), taskOld.getType());
-            return taskOld.getId();
-        }
-
-        StockTask task = stockTaskManager.createTask(StockTaskType.ComplementStockHistoryData);
-        task.start();
-
-        // 数据清洗
-        stockDao.washData();
-
-        // 下载元数据
-        downloadSaveMeta();
-
-        // 下载股票数据
-        List<StockMeta> stockMetas = stockDao.loadMeta();
-
-        final Date historyStartDateFinal = getDefaultHistoryStartDate();
-        final Date historyEndDate = new Date();
-
-        // 多线程干活，提高性能。 同时并发下载多只股票的数据
-        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        int nStockMetas = stockMetas.size();
-        CountDownLatch countDownLatch = new CountDownLatch(nStockMetas);
-
-        for (StockMeta meta : stockMetas) {
-            Future<?> future = fixedThreadPool.submit(new Runnable() {
-                @Override
-                public void run() {
-                    // 获取改股票最后一天数据时间
-                    String code = meta.getCode();
-
-                    Date lastDate = stockDao.lastDateOfData(code);
-                    // 如果从数据库里没有查到该股票的最后一天数据，则起始时间设置为配置中的数据开始时间
-                    if (lastDate == null) {
-                        lastDate = historyStartDateFinal;
-                    } else {
-                        lastDate = DateTimeUtils.dateAfterDays(lastDate, 1);
-                    }
-                    // 下载从lastDate到histroyEndDate的日期的数据
-                    try {
-                        Thread.sleep(delayPerStock);
-                        downloadSaveHistory(meta.getZone(), meta.getCode(), lastDate, historyEndDate);
-                        task.incProgress(100.0 / (double) nStockMetas);
-                    } catch (InterruptedException e) {
-                        logger.error("thread interrupted.", e);
-                    } finally {
-                        countDownLatch.countDown();
-                        logger.info("remain {} stocks to download.", countDownLatch.getCount());
-                        if (countDownLatch.getCount() <= 0) {
-                            task.finish();
-                        }
-                    }
-                }
-            });
-        }
-
-        return task.getId();
+    public StockComplementTask startComplementTask() {
+        stockComplementTask.start();
+        return stockComplementTask;
     }
 }

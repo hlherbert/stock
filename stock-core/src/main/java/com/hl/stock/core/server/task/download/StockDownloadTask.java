@@ -64,6 +64,6 @@ public class StockDownloadTask {
             return;
         }
         historyComplementTaskStart = true;
-        stockDownloadSaver.complementAllStockHistoryData();
+        stockDownloadSaver.startComplementTask();
     }
 }

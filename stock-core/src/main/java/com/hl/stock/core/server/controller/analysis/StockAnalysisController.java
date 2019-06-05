@@ -2,15 +2,18 @@ package com.hl.stock.core.server.controller.analysis;
 
 
 import com.hl.stock.core.base.analysis.StockAnalysis;
+import com.hl.stock.core.base.analysis.StockSuggestTask;
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.stat.StockStat;
 import com.hl.stock.core.base.analysis.stat.StockStatIndex;
 import com.hl.stock.core.base.analysis.strategy.StockStrategy;
 import com.hl.stock.core.base.analysis.strategy.StockStrategyFactory;
 import com.hl.stock.core.base.analysis.validate.StockValidateResult;
+import com.hl.stock.core.base.task.StockTaskProgress;
 import com.hl.stock.core.common.util.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +32,9 @@ public class StockAnalysisController {
 
     @Autowired
     private StockStrategyFactory stockStrategyFactory;
+
+    @Autowired
+    private StockSuggestTask stockSuggestTask;
 
     /**
      * 统计股票数据
@@ -86,5 +92,30 @@ public class StockAnalysisController {
         Date buyDateV = DateTimeUtils.fromString(DateTimeUtils.yyyyMMdd, buyDate);
         StockStrategy strategy = stockStrategyFactory.getStrategy(strategyName);
         return stockAnalysis.suggestStocks(buyDateV, strategy);
+    }
+
+    /**
+     * 启动推荐股票异步任务：使用指定策略，推荐可以购买的股票
+     *
+     * @param buyDate      买入日期
+     * @param strategyName 策略名称
+     * @return 推荐股票清单，按照利润率从高到底排序
+     */
+    @PostMapping("/stock/analysis/suggestStocksTask")
+    public void startSuggestStocksTask(@RequestParam("buyDate") String buyDate, @RequestParam("strategy") String strategyName) throws ParseException {
+        Date buyDateV = DateTimeUtils.fromString(DateTimeUtils.yyyyMMdd, buyDate);
+        StockStrategy strategy = stockStrategyFactory.getStrategy(strategyName);
+        stockSuggestTask.init(buyDateV, strategy);
+        stockSuggestTask.start();
+    }
+
+    /**
+     * 获取推荐股票任务的进度
+     *
+     * @return
+     */
+    @GetMapping("/stock/analysis/suggestStocksTask")
+    public StockTaskProgress<List<StockAdvice>> getSuggestStocksTaskProgress() {
+        return stockSuggestTask.getProgressData();
     }
 }

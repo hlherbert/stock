@@ -5,6 +5,9 @@ import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @SpringBootTest
 public class FunnyTest {
@@ -54,5 +57,27 @@ public class FunnyTest {
 
 
         System.out.println("end");
+    }
+
+    public void testFuture() {
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        List<Integer> ints = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            ints.set(i, i);
+        }
+
+        for (Integer i : ints) {
+            CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> {
+                return null;
+            });
+
+            futures.add(future);
+        }
+
+
+        // 等待所有任务完成
+        CompletableFuture<Void> allResult = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        allResult.join();
+
     }
 }

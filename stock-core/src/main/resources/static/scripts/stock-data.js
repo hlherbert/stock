@@ -1,8 +1,5 @@
 // 股票数据获取功能
-import jQuery from "jquery";
-import {StringUtil} from "./common/stringutil"
-
-const MAX_PROGRESS = 100; //进度100%
+import {TaskService} from "./common/taskservice"
 
 export class StockData  {
     constructor() {
@@ -31,29 +28,7 @@ export class StockData  {
     // 补录
     complement() {
         // 提交任务
-        let url = "/stock/download/complement";
-        let that = this; //避免回调里this被错误指向调用者
-        jQuery.post(url).done(function (taskId) {
-            let intervalId = window.setInterval(function () {
-                let urlTaskProgress = StringUtil.stringFormat("/stock/task/progress?taskId={0}", taskId);
-                jQuery.get(urlTaskProgress)
-                    .done(function (progress) {
-                        that.updateComplementProgress(progress);
-                        if (progress === MAX_PROGRESS) {
-                            that.btnComplement.removeAttribute('disabled');
-                            that.clearInterval(intervalId);
-                        }
-                    });
-            }, 1000);
-        });
-    }
-
-    // 更新补录进度条
-    updateComplementProgress(progress) {
-        this.progressComplement.value = progress;
-        this.labelProgressComplement.textContent = progress + "%";
-        if (progress === MAX_PROGRESS) {
-            this.labelProgressComplement.textContent = "完成";
-        }
+        let url = "/stock/download/complementTask";
+        TaskService.startTask(this.progressComplement, this.labelProgressComplement, url, null);
     }
 }

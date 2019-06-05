@@ -34,5 +34,5 @@ public interface StockDownloadSaver {
      * 补录所有股票历史数据（从该股票已有的最后一天数据时间到今天）
      * @return 任务id
      */
-    String complementAllStockHistoryData();
+    StockComplementTask startComplementTask();
 }

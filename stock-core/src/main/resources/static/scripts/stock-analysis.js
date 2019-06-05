@@ -4,6 +4,9 @@ import echarts from 'echarts';
 import {
     StringUtil
 } from './common/stringutil';
+import {
+    TaskService
+} from "./common/taskservice";
 
 // 常量定义，只在本文件内有效
 
@@ -111,7 +114,6 @@ export class StockAnalysis {
         // 推荐表格
         this.tableSuggest = document.querySelector('#table-suggest');
         this.selStrategy = document.querySelector('#sel-strategy');
-        this.spanSuggestWait = document.querySelector('#span-suggest-wait');
 
         // 策略验证按钮
         this.btnStrategyValidate = document.querySelector('#btn-strategy-validate');
@@ -120,6 +122,10 @@ export class StockAnalysis {
         // 推荐按钮
         this.btnSuggest = document.querySelector('#btn-suggest');
         this.btnSuggest.addEventListener('click', this.onBtnSuggestClick.bind(this));
+
+        // 推荐进度
+        this.progressSuggest = document.querySelector('#progress-suggest');
+        this.labelProgressSuggest = document.querySelector('#progress-suggest-val');
 
         this.strategyChart = echarts.init(document.querySelector('#chart-strategy'), chartTheme);
         this.initChart(this.strategyChart, this.option0);
@@ -226,63 +232,52 @@ export class StockAnalysis {
 
         let strategy = this.selStrategy.value; //策略
 
-        // 查询推荐股票并显示在table里
-        this.updateSuggestTable(this.tableSuggest, strategy);
-    }
-
-    // 更新推荐表格
-    updateSuggestTable(table, strategy) {
-        let that = this;
-
-        let callback = function (advices) {
-            //重新隐藏请稍等的提示文字
-            that.spanSuggestWait.hidden = true;
-            that.clearTable(table);
-
-            // 插入标题
-            let row = table.insertRow(0);
-            row.innerHTML = "<th>代码</th><th>名称</th><th>风险</th><th>预期利润率</th>";
-
-            if (advices === null || advices === "" || advices.length === 0) {
-                return;
-            }
-
-            
-            // 临时方便函数-插入一行
-            let insertDataRow = function (stockAdvice) {
-                if (stockAdvice === null || stockAdvice === undefined) {
-                    return;
-                }
-                let row = table.insertRow(table.rows.length);
-                let name = that.findStockName(that.stockmetaMap, stockAdvice.code);
-                row.innerHTML = StringUtil.stringFormat("<td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td>", stockAdvice.code, name, stockAdvice.risk, stockAdvice.profitRate);
-            }
-
-            // 插入数据
-            for (let i=0;i<advices.length;i++) {
-                insertDataRow(advices[i]);
-            }
-        }
-
         // 购买日期设置为今天
         let buyDate = StringUtil.dateFormat(new Date(), "yyyyMMdd");
 
-        // 显示请稍候的文本
-        that.spanSuggestWait.hidden = false;
-        that.querySuggestStocks(buyDate, strategy, callback.bind(that));
+        // 查询推荐股票并显示在table里
+        this.startSuggestStocksTask(buyDate, strategy);
     }
 
-    querySuggestStocks(buyDate, strategy, callback) {
-        let url = StringUtil.stringFormat('/stock/analysis/suggestStocks?buyDate={0}&strategy={1}', buyDate, strategy);
-        jQuery.get(url)
-            .done(function (advices) {
-                callback(advices);
-            })
-            .fail(function () {
-                callback(null);
-            });
+    // 启动推荐股票任务
+    startSuggestStocksTask(buyDate, strategy) {
+        let url = StringUtil.stringFormat('/stock/analysis/suggestStocksTask?buyDate={0}&strategy={1}', buyDate, strategy);
+        let callback = this.updateSuggestTable;
+        TaskService.startTask(this.progressSuggest, this.labelProgressSuggest, url, callback.bind(this));
     }
 
+    // 更新推荐表格
+    updateSuggestTable(progressData) {
+        let that = this;
+        let table = this.tableSuggest;
+        let advices = progressData.data;
+
+        that.clearTable(table);
+
+        // 插入标题
+        let row = table.insertRow(0);
+        row.innerHTML = "<th>代码</th><th>名称</th><th>风险</th><th>预期利润率</th>";
+
+        if (advices === null || advices === "" || advices.length === 0) {
+            return;
+        }
+
+        // 临时方便函数-插入一行
+        let insertDataRow = function (stockAdvice) {
+            if (stockAdvice === null || stockAdvice === undefined) {
+                return;
+            }
+            let row = table.insertRow(table.rows.length);
+            let name = that.findStockName(that.stockmetaMap, stockAdvice.code);
+            row.innerHTML = StringUtil.stringFormat("<td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td>", stockAdvice.code, name, stockAdvice.risk, stockAdvice.profitRate);
+        }
+
+        // 插入数据
+        for (let i = 0; i < advices.length; i++) {
+            insertDataRow(advices[i]);
+        }
+    }
+    
     // 清除表
     clearTable(table) {
         let nRows = table.rows.length;
@@ -306,7 +301,7 @@ export class StockAnalysis {
 
         let map = [];
         if (ret != null) {
-            for (let i=0;i<ret.length;i++) {
+            for (let i = 0; i < ret.length; i++) {
                 let meta = ret[i];
                 map[meta.code] = meta;
             }

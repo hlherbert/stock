@@ -9,7 +9,6 @@ import com.hl.stock.core.base.analysis.stat.StockStator;
 import com.hl.stock.core.base.analysis.strategy.StockStrategy;
 import com.hl.stock.core.base.analysis.strategy.StockStrategyFactory;
 import com.hl.stock.core.base.analysis.validate.StockValidateResult;
-import com.hl.stock.core.base.analysis.validate.StockValidator;
 import com.hl.stock.core.base.data.StockAnalysisDao;
 import com.hl.stock.core.base.data.StockDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +33,6 @@ public class StockAnalysis {
     // 统计器
     @Autowired
     private StockStator stockStator;
-
-    // 验证器
-    @Autowired
-    private StockValidator stockValidator;
 
     @Autowired
     private StockStrategyFactory stockStrategyFactory;

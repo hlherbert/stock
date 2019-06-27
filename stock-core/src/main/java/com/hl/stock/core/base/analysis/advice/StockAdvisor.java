@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,12 @@ import java.util.stream.Collectors;
 public class StockAdvisor {
 
     private static Logger logger = LoggerFactory.getLogger(StockAdvisor.class);
+
+    /**
+     * 推荐股票个数
+     */
+    private static final int N_SUGGEST_STOCK = 10;
+
     @Autowired
     StockDao stockDao;
 
@@ -49,8 +56,10 @@ public class StockAdvisor {
 
         logger.info("advices size:{}", advices.size());
         // 按照利润率从高到低排序
-        advices.sort((o1, o2) -> Double.compare(o2.getProfitRate(), o1.getProfitRate()));
+        advices.sort(Comparator.comparing(StockAdvice::getProfitRate).reversed());
 
-        return advices;
+        // 只推荐前 N_SUGGEST_STOCK只股票
+        return advices.subList(0, Math.min(N_SUGGEST_STOCK, advices.size()));
+        //return advices;
     }
 }

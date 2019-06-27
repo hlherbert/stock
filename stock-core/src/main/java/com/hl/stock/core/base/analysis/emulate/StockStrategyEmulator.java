@@ -12,6 +12,7 @@ import com.hl.stock.core.common.util.DateTimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -31,13 +32,14 @@ public class StockStrategyEmulator {
     /**
      * 模拟交易的时间间隔
      */
-    private static final int EXPERIMENT_DAY_STEP = 90;
+    private static final int EXPERIMENT_DAY_STEP = 30;
 
     private static final Logger logger = LoggerFactory.getLogger(StockStrategyEmulator.class);
 
     @Autowired
     private StockAdvisor stockAdvisor;
 
+    @Qualifier("stockValidatorV2")
     @Autowired
     private StockValidator stockValidator;
 

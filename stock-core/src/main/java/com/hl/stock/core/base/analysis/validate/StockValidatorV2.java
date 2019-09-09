@@ -77,7 +77,7 @@ public class StockValidatorV2 implements StockValidator {
         AtomicInteger nPass = new AtomicInteger(0);
         AtomicInteger nTotal = new AtomicInteger(0);
         double totalProfitRate = 0;
-        ConcurrentLinkedQueue<Double> profitRateQueue = new ConcurrentLinkedQueue();
+        ConcurrentLinkedQueue<Double> profitRateQueue = new ConcurrentLinkedQueue<>();
 
         // 内部由于涉及到DB IO + CPU，采用多线程提高资源利用率
         codes.parallelStream().forEach(code -> {

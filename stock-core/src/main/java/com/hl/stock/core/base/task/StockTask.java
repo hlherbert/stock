@@ -105,8 +105,8 @@ public abstract class StockTask<T> {
         progress = newProgress;
     }
 
-    public StockTaskProgress getProgressData() {
-        return new StockTaskProgress((int) progress, getData());
+    public StockTaskProgress<T> getProgressData() {
+        return new StockTaskProgress<T>((int) progress, getData());
     }
 
     /**

@@ -23,8 +23,7 @@ CREATE TABLE `stock_data` (
   `amountMoney` decimal(16,2) DEFAULT NULL,
   `exchangePercent` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idxUniq` (`code`,`date`),
-  KEY `idxDate` (`date`)
+  UNIQUE KEY `idxUniq` (`code`,`date`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9061928 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*

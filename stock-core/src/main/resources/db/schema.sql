@@ -22,8 +22,7 @@ CREATE TABLE IF NOT EXISTS `stock_data` (
   `amountMoney` DECIMAL(16,2) NULL,
   `exchangePercent` DECIMAL(10,2) NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `idxUniq` (`code` ASC, `date` ASC),
-  INDEX `idxDate` (`date` ASC)
+  UNIQUE INDEX `idxUniq` (`code` ASC, `date` ASC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE IF NOT EXISTS `stock_validate_result` (

@@ -3,6 +3,8 @@ package com.hl.stock.core.base.analysis;
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.base.analysis.advice.StockAdvisor;
 import com.hl.stock.core.base.analysis.emulate.StockStrategyEmulator;
+import com.hl.stock.core.base.analysis.fooladvice.FoolStockAdvice;
+import com.hl.stock.core.base.analysis.fooladvice.FoolStockAdvisor;
 import com.hl.stock.core.base.analysis.stat.StockStat;
 import com.hl.stock.core.base.analysis.stat.StockStatIndex;
 import com.hl.stock.core.base.analysis.stat.StockStator;
@@ -29,6 +31,10 @@ public class StockAnalysis {
     // 推荐器
     @Autowired
     private StockAdvisor stockAdvisor;
+
+    // 傻瓜推荐器
+    @Autowired
+    private FoolStockAdvisor foolAdvisor;
 
     // 统计器
     @Autowired
@@ -115,5 +121,14 @@ public class StockAnalysis {
      */
     public List<StockValidateResult> loadAllStrategyValidateResult() {
         return stockAnalysisDao.loadAllValidateResult();
+    }
+
+    /**
+     * 傻瓜式推荐股票
+     *
+     * @return 推荐结果
+     */
+    public FoolStockAdvice foolSuggestStocks() {
+        return foolAdvisor.foolSuggestStocks();
     }
 }

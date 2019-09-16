@@ -4,6 +4,7 @@ package com.hl.stock.core.server.controller.analysis;
 import com.hl.stock.core.base.analysis.StockAnalysis;
 import com.hl.stock.core.base.analysis.StockSuggestTask;
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
+import com.hl.stock.core.base.analysis.fooladvice.FoolStockAdvice;
 import com.hl.stock.core.base.analysis.stat.StockStat;
 import com.hl.stock.core.base.analysis.stat.StockStatIndex;
 import com.hl.stock.core.base.analysis.strategy.StockStrategy;
@@ -38,10 +39,11 @@ public class StockAnalysisController {
 
     /**
      * 统计股票数据
+     *
      * @param index 统计指标
-     * @param code 编码
+     * @param code  编码
      * @param start 起始时间
-     * @param end 终止时间
+     * @param end   终止时间
      * @return 统计结果
      * @throws ParseException
      */
@@ -117,5 +119,16 @@ public class StockAnalysisController {
     @GetMapping("/stock/analysis/suggestStocksTask")
     public StockTaskProgress<List<StockAdvice>> getSuggestStocksTaskProgress() {
         return stockSuggestTask.getProgressData();
+    }
+
+
+    /**
+     * 傻瓜式推荐股票
+     *
+     * @return 推荐股票清单，和建议购买日期
+     */
+    @GetMapping("/stock/analysis/foolSuggestStocks")
+    public FoolStockAdvice foolSuggestStocks() {
+        return stockAnalysis.foolSuggestStocks();
     }
 }

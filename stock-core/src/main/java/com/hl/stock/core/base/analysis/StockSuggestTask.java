@@ -1,6 +1,7 @@
 package com.hl.stock.core.base.analysis;
 
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
+import com.hl.stock.core.base.analysis.advice.StockAdvisor;
 import com.hl.stock.core.base.analysis.strategy.StockStrategy;
 import com.hl.stock.core.base.data.StockDao;
 import com.hl.stock.core.base.model.StockMeta;
@@ -67,8 +68,9 @@ public class StockSuggestTask extends StockTask<List<StockAdvice>> {
                     // 按照利润率从高到低排序
                     advices.sort((o1, o2) -> Double.compare(o2.getProfitRate(), o1.getProfitRate()));
 
-                    // 记录结果
-                    data = advices;
+                    // 记录结果, 只推荐前N只股票
+                    data = advices.subList(0, Math.min(StockAdvisor.N_SUGGEST_STOCK, advices.size()));
+                    ;
                     this.finish();
                 }
 

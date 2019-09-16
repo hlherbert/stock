@@ -3,6 +3,8 @@ package com.hl.stock.core.common.util;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 public class DateTimeUtils {
@@ -14,6 +16,11 @@ public class DateTimeUtils {
      * 一天的毫秒数
      */
     public static final long ONE_DAY_MILLISECONDS = 1 * 24 * 60 * 60 * 1000;
+
+    /**
+     * 一月的天数
+     */
+    public static final int ONE_MONTH_DAYS = 30;
 
     /**
      * 一年的天数
@@ -55,5 +62,39 @@ public class DateTimeUtils {
      */
     public static int daysBetween(Date firstDay, Date lastDay) {
         return (int) ((lastDay.getTime() - firstDay.getTime()) / ONE_DAY_MILLISECONDS);
+    }
+
+    /**
+     * 获取日期年份
+     *
+     * @param date 日期
+     * @return 年份
+     */
+    public static int yearOf(Date date) {
+        return toLocalDate(date).getYear();
+    }
+
+    /**
+     * 获取日期月份 1~12
+     *
+     * @param date 日期
+     * @return 月份
+     */
+    public static int monthOf(Date date) {
+        return toLocalDate(date).getMonthValue();
+    }
+
+    /**
+     * date -> localdate
+     */
+    public static LocalDate toLocalDate(Date date) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    /**
+     * localdate -> date
+     */
+    public static Date toDate(LocalDate localDate) {
+        return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     }
 }

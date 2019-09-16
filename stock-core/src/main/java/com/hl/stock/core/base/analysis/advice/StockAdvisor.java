@@ -24,7 +24,7 @@ public class StockAdvisor {
     /**
      * 推荐股票个数
      */
-    private static final int N_SUGGEST_STOCK = 10;
+    public static final int N_SUGGEST_STOCK = 10;
 
     @Autowired
     StockDao stockDao;
@@ -62,4 +62,6 @@ public class StockAdvisor {
         return advices.subList(0, Math.min(N_SUGGEST_STOCK, advices.size()));
         //return advices;
     }
+
+
 }

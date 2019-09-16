@@ -1,15 +1,12 @@
-
-
-group 'org.hl'
-version '1.0-SNAPSHOT'
-
-
-allprojects {
+//allprojects
+subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
 
     sourceCompatibility = 1.8
-
+    group 'org.hl'
+    version '1.0-SNAPSHOT'
+    
     idea {
         module {
             inheritOutputDirs = true
@@ -39,16 +36,3 @@ allprojects {
     }
 }
 
-
-
-// 所有子项目的通用配置
-subprojects {
-    dependencies {
-        // 通用依赖
-
-        // 测试依赖
-        testCompile(
-                "junit:junit:4.12"
-        )
-    }
-}

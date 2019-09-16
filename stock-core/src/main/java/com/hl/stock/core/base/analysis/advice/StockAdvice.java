@@ -84,6 +84,26 @@ public class StockAdvice {
     }
 
     /**
+     * 追加消息
+     *
+     * @param msg 附加消息
+     */
+    public void appendMessage(String msg) {
+        this.message = message + "|" + msg;
+    }
+
+    /**
+     * 提高风险
+     *
+     * @param risk 更高的风险
+     */
+    public void riseRisk(StockAdvice.Risk risk) {
+        if (this.risk.getValue() < risk.getValue()) {
+            this.risk = risk;
+        }
+    }
+
+    /**
      * 风险
      */
     public enum Risk {

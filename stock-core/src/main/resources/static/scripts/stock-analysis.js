@@ -128,10 +128,10 @@ export class StockAnalysis {
         this.labelProgressSuggest = document.querySelector('#progress-suggest-val');
 
         // 傻瓜推荐结果
-        this.txtAdviceRisk =  document.querySelector('p-advice-risk');
-        this.txtAdviceMessage =  document.querySelector('p-advice-message');
-        this.txtAdviceBuyDate =  document.querySelector('p-advice-buydate');
-        this.txtAdviceSellDate =  document.querySelector('p-advice-selldate');
+        this.txtAdviceRisk =  document.querySelector('#p-advice-risk');
+        this.txtAdviceMessage =  document.querySelector('#p-advice-message');
+        this.txtAdviceBuyDate =  document.querySelector('#p-advice-buydate');
+        this.txtAdviceSellDate =  document.querySelector('#p-advice-selldate');
 
         this.strategyChart = echarts.init(document.querySelector('#chart-strategy'), chartTheme);
         this.initChart(this.strategyChart, this.option0);
@@ -306,9 +306,15 @@ export class StockAnalysis {
         let that = this;
         let table = this.tableSuggest;
         let advices = advice.advices;
+        
+        // 插入推荐结果文本：
+        that.txtAdviceRisk.textContent = StringUtil.riskToChinese(advice.risk);
+        that.txtAdviceMessage.textContent = advice.message;
+        that.txtAdviceBuyDate.textContent = StringUtil.formatStandardDate(advice.buyDate);
+        that.txtAdviceSellDate.textContent = StringUtil.formatStandardDate(advice.sellDate);
 
+        // 表格
         that.clearTable(table);
-
         // 插入标题
         let row = table.insertRow(0);
         row.innerHTML = "<th>代码</th><th>名称</th><th>风险</th><th>预期利润率</th>";
@@ -331,12 +337,6 @@ export class StockAnalysis {
         for (let i = 0; i < advices.length; i++) {
             insertDataRow(advices[i]);
         }
-
-        // 插入推荐结果
-        that.txtAdviceRisk.value = advice.risk;
-        that.txtAdviceMessage.value = advice.message;
-        that.txtAdviceBuyDate.value = advice.buyDate;
-        that.txtAdviceSellDate.value = advice.sellDate;
     }
     
     // 清除表

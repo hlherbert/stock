@@ -41,4 +41,15 @@ export class StringUtil {
         dateObj.setTime(Date.parse(dateStr));
         return StringUtil.dateFormat(dateObj, "yyyy/MM/dd");
     }
+
+    // 风险转换为中文
+    static riskToChinese(risk) {
+        if (risk === "High") {
+            return "高";
+        } else if (risk === "Low") {
+            return "低";
+        } else if (risk === "Mid") {
+            return "中";
+        }
+    }
 }

@@ -93,7 +93,7 @@ public class FoolStockAdvice {
      * @param msg 附加消息
      */
     public void appendMessage(String msg) {
-        this.message = message + "|" + msg;
+        this.message = (message == null ? msg : message + "|" + msg);
     }
 
     /**

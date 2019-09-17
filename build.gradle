@@ -28,11 +28,17 @@ subprojects {
 
     dependencies {
         testCompile group: 'junit', name: 'junit', version: '4.12'
+        runtime('org.springframework.boot:spring-boot-devtools')
     }
 
     // 编译: 代码静态检查，如果不通过则报错
     tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+    }
+
+    // 允许静态资源刷新后自动liveReload热部署
+    bootRun {
+        addResources = true
     }
 }
 

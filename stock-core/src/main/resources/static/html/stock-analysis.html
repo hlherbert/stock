@@ -20,23 +20,6 @@
 </nav>
 <main>
     <article>
-        <section>
-            <h2>策略验证</h2>
-            <form action="" id="form-strategy-validate" method="">
-                <div class="button">
-                    <button id="btn-strategy-validate" type="button">策略验证</button>
-                </div>
-            </form>
-        </section>
-
-        <section>
-            <h2>验证结果</h2>
-            <figure>
-                <div class="chart" id="chart-strategy"></div>
-                <figcaption>选股策略验证图</figcaption>
-            </figure>
-        </section>
-
         <!-- 股票推荐 -->
         <section>
             <h2>股票推荐</h2>
@@ -57,10 +40,10 @@
                 <caption>推荐结果</caption>
                 <thead>
                 <tr>
-                    <td>代码</td>
-                    <td>名称</td>
-                    <td>风险</td>
-                    <td>预期利润率</td>
+                    <th>代码</th>
+                    <th>名称</th>
+                    <th>风险</th>
+                    <th>预期利润率</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -72,10 +55,29 @@
                 </tr>
                 </tbody>
             </table>
-            <label for="p-advice-risk">风险</label><p id="p-advice-risk"></p>
-            <label for="p-advice-message">评论</label><p id="p-advice-message"></p>
-            <label for="p-advice-buydate">建议买入日期</label><p id="p-advice-buydate"></p>
-            <label for="p-advice-selldate">建议卖出日期</label><p id="p-advice-selldate"></p>
+            <div>
+                <p><label for="p-advice-risk">风险：</label><span id="p-advice-risk"></span></p>
+                <p><label for="p-advice-message">评论：</label><span id="p-advice-message"></span></p>
+                <p><label for="p-advice-buydate">买入日期：</label><span id="p-advice-buydate"></span></p>
+                <p><label for="p-advice-selldate">卖出日期：</label><span id="p-advice-selldate"></span></p>
+            </div>
+        </section>
+
+        <section>
+            <h2>策略验证</h2>
+            <form action="" id="form-strategy-validate" method="">
+                <div class="button">
+                    <button id="btn-strategy-validate" type="button">策略验证</button>
+                </div>
+            </form>
+        </section>
+
+        <section>
+            <h2>验证结果</h2>
+            <figure>
+                <div class="chart" id="chart-strategy"></div>
+                <figcaption>选股策略验证图</figcaption>
+            </figure>
         </section>
     </article>
 </main>

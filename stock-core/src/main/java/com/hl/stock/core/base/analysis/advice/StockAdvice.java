@@ -52,7 +52,8 @@ public class StockAdvice {
     }
 
     public double getProfitRate() {
-        return profitRate;
+        // 保留2位小数
+        return (double) Math.round(profitRate * 100) / 100;
     }
 
     public void setProfitRate(double profitRate) {

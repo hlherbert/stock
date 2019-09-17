@@ -334,9 +334,9 @@ export class StockAnalysis {
 
         // 插入推荐结果
         that.txtAdviceRisk.value = advice.risk;
-        that.txtAdviceMessage = advice.message;
-        that.txtAdviceBuyDate = advice.buyDate;
-        that.txtAdviceSellDate = advice.sellDate;
+        that.txtAdviceMessage.value = advice.message;
+        that.txtAdviceBuyDate.value = advice.buyDate;
+        that.txtAdviceSellDate.value = advice.sellDate;
     }
     
     // 清除表

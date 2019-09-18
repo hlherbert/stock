@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html id="doc-stock-analysis" lang="zh">
+<html id="doc-stock-analysis-fool" lang="zh">
 
 <head>
     <!-- 响应式 -->
@@ -8,7 +8,7 @@
     <meta name="HandheldFriendly" content="true">
 
     <meta charset="utf-8">
-    <title>股票分析推荐</title>
+    <title>一键荐股</title>
 
     <link href="../styles/style.css" rel="stylesheet">
     <script src="../dist/bundle.js"></script>
@@ -16,7 +16,7 @@
 
 <body>
 <header>
-    <h1>股票分析推荐</h1>
+    <h1>一键荐股</h1>
 </header>
 <nav>
     <ul>
@@ -27,22 +27,7 @@
     <article>
         <!-- 股票推荐 -->
         <section>
-            <h2>股票推荐</h2>
-            <div>
-                <label for="sel-strategy">选择策略:</label>
-                <select id="sel-strategy">
-                    <option value="Fool">傻瓜式</option>
-                    <option value="PriceRate">溢价比策略</option>
-                    <option value="GrowSpeed">增长速度策略</option>
-                    <option value="WisdomOfCrowd">群体智慧策略</option>
-                </select>
-                <button id="btn-suggest" type="button">推荐</button>
-                <label for="progress-suggest">进度</label>
-                <progress id='progress-suggest' max="100" value="0"></progress>
-                <span id='progress-suggest-val'>未开始</span>
-            </div>
             <table id="table-suggest">
-                <caption>推荐结果</caption>
                 <thead>
                 <tr>
                     <th>代码</th>
@@ -66,23 +51,6 @@
                 <p><label for="p-advice-buydate">买入日期：</label><span id="p-advice-buydate"></span></p>
                 <p><label for="p-advice-selldate">卖出日期：</label><span id="p-advice-selldate"></span></p>
             </div>
-        </section>
-
-        <section>
-            <h2>策略验证</h2>
-            <form action="" id="form-strategy-validate" method="">
-                <div class="button">
-                    <button id="btn-strategy-validate" type="button">策略验证</button>
-                </div>
-            </form>
-        </section>
-
-        <section>
-            <h2>验证结果</h2>
-            <figure>
-                <div class="chart" id="chart-strategy"></div>
-                <figcaption>选股策略验证图</figcaption>
-            </figure>
         </section>
     </article>
 </main>

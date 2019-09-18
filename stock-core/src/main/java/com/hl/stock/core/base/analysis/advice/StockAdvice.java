@@ -108,18 +108,29 @@ public class StockAdvice {
      * 风险
      */
     public enum Risk {
-        Low(0),
-        Mid(1),
-        High(2);
+        Low(0, "低"),
+        Mid(1, "中"),
+        High(2, "高");
 
         private int value;
+        private String txt;
 
-        Risk(int value) {
+        Risk(int value, String txt) {
             this.value = value;
+            this.txt = txt;
         }
 
         public int getValue() {
             return this.value;
+        }
+
+        public String getTxt() {
+            return txt;
+        }
+
+        @Override
+        public String toString() {
+            return txt;
         }
     }
 }

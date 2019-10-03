@@ -2,6 +2,7 @@ package com.hl.stock.core.base.analysis.fooladvice;
 
 import com.hl.stock.core.base.analysis.advice.StockAdvice;
 import com.hl.stock.core.common.util.DateTimeUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 /**
  * 牛熊市过滤器
  */
+@Component
 public class BullBearYearFilter implements FoolStockFilter {
 
     /**

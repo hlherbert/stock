@@ -32,6 +32,9 @@ export class StockAnalysisFool {
         this.txtAdviceBuyDate =  document.querySelector('#p-advice-buydate');
         this.txtAdviceSellDate =  document.querySelector('#p-advice-selldate');
 
+        // 股票代码
+        this.stockmetaMap = this.queryStockMetaMap();
+
         this.onDocumentLoad();
     }
 

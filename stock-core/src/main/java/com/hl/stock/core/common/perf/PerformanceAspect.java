@@ -2,10 +2,8 @@ package com.hl.stock.core.common.perf;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.util.Map;
@@ -15,9 +13,11 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by caiqingliang on 2016/8/7.
  * 切面，计算函数耗时，按函数总耗时排序输出（总耗时、平均单次耗时、调用次数）
+ *
+ * 不测量性能，提高程序速度
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class PerformanceAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(PerformanceAspect.class);

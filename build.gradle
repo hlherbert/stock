@@ -37,8 +37,8 @@ subprojects {
     }
 
     // 允许静态资源刷新后自动liveReload热部署
-    bootRun {
-        addResources = true
-    }
+//    bootRun {
+//        addResources = true
+//    }
 }
 

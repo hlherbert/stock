@@ -35,3 +35,9 @@ CREATE TABLE IF NOT EXISTS `stock_validate_result` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `idxUniq` (`strategy` ASC, `date` ASC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `stock_data_update` (
+  `code` varchar(10) NOT NULL,
+  `updateDate` DATETIME NULL,
+  PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

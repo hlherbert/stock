@@ -97,4 +97,13 @@ public class DateTimeUtils {
     public static Date toDate(LocalDate localDate) {
         return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     }
+
+    /**
+     * 今天的日期，不包含时间
+     *
+     * @return
+     */
+    public static Date todayDate() {
+        return toDate(LocalDate.now());
+    }
 }

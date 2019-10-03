@@ -6,6 +6,8 @@ import com.hl.stock.core.base.analysis.strategy.GrowSpeedStrategy;
 import com.hl.stock.core.base.analysis.strategy.PriceRateStrategy;
 import com.hl.stock.core.base.analysis.strategy.StockStrategyFactory;
 import com.hl.stock.core.common.util.DateTimeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,17 +19,19 @@ import java.util.List;
 @Component
 public class MonthChooseFilter implements FoolStockFilter {
 
+    private static Logger logger = LoggerFactory.getLogger(MonthChooseFilter.class);
+
     @Autowired
     private StockAdvisor stockAdvisor;
 
     @Autowired
-    private StockStrategyFactory factory;
+    private StockStrategyFactory stockStrategyFactory;
 
     @Override
     public FoolStockAdvice filter(FoolStockAdvice foolAdvice) {
-        // 看当前月份？1，2，11大赚-用growspeed；3，4，7小赚-用priceRate；5，6，8，12有风险-growSpeed；9大亏，不推荐。
+        // 看当前月份？1，2，10， 11大赚-用growspeed；3，4，7小赚-用priceRate；5，6，8，12有风险-growSpeed；9大亏，不推荐。
         final int month = DateTimeUtils.monthOf(foolAdvice.getBuyDate());
-        if (month == 1 || month == 2 || month == 11) {
+        if (month == 1 || month == 2 || month == 10 || month == 11) {
             foolAdvice.setStrategy(new GrowSpeedStrategy().name());
             foolAdvice.riseRisk(StockAdvice.Risk.Low);
             foolAdvice.appendMessage(String.format("%d月大赚（低风险）.", month));
@@ -46,8 +50,9 @@ public class MonthChooseFilter implements FoolStockFilter {
 
         // 低风险则进行股票推荐
         if (foolAdvice.getRisk() == StockAdvice.Risk.Low) {
+            logger.error("[d] foolAdvice={}, stockStrategyFactory={}, stockAdvisor={}", foolAdvice, stockStrategyFactory, stockAdvisor);
             List<StockAdvice> advices = stockAdvisor.suggestStocks(foolAdvice.getBuyDate(),
-                    factory.getStrategy(foolAdvice.getStrategy()));
+                    stockStrategyFactory.getStrategy(foolAdvice.getStrategy()));
             foolAdvice.setAdvices(advices);
         }
         return foolAdvice;

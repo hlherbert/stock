@@ -23,15 +23,23 @@ public class FoolStockAdvisor {
     @Autowired
     private StockAdvisor stockAdvisor;
 
+    @Autowired
     private PriceFilter priceFilter;
+
+    @Autowired
+    private MonthChooseFilter monthChooseFilter;
+
+    @Autowired
+    private BullBearYearFilter bullBearYearFilter;
 
     private List<FoolStockFilter> foolStockFilterList;
 
     @Autowired
-    public FoolStockAdvisor(PriceFilter priceFilter) {
+    public FoolStockAdvisor(PriceFilter priceFilter, MonthChooseFilter monthChooseFilter,
+                            BullBearYearFilter bullBearYearFilter) {
         this.foolStockFilterList = Arrays.asList(
-                new BullBearYearFilter(),
-                new MonthChooseFilter(),
+                bullBearYearFilter,
+                monthChooseFilter,
                 priceFilter
         );
     }

@@ -112,7 +112,7 @@ export class StockAnalysisFool {
         that.clearTable(table);
         // 插入标题
         let row = table.insertRow(0);
-        row.innerHTML = "<th>代码</th><th>名称</th><th>风险</th><th>预期利润率</th>";
+        row.innerHTML = "<th>代码</th><th>名称</th><th>风险</th><th>预期利润率</th><th>说明</th>";
 
         if (advices === null || advices === "" || advices.length === 0) {
             return;
@@ -125,7 +125,8 @@ export class StockAnalysisFool {
             }
             let row = table.insertRow(table.rows.length);
             let name = that.findStockName(that.stockmetaMap, stockAdvice.code);
-            row.innerHTML = StringUtil.stringFormat("<td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td>", stockAdvice.code, name, stockAdvice.risk, stockAdvice.profitRate);
+            row.innerHTML = StringUtil.stringFormat("<td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td>", 
+            stockAdvice.code, name, stockAdvice.risk, stockAdvice.profitRate, stockAdvice.message);
         }
 
         // 插入数据

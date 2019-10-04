@@ -42,7 +42,7 @@ class StockDownloaderDataHelper {
 
     /**
      * 请求url的格式
-     * e.g. http://q.stock.sohu.com/hisHq?code=zs_000001&start=20000504&end=20151215&stat=1&order=D&period=d
+     * e.g. http://q.stock.sohu.com/hisHq?code=cn_000001&start=20000504&end=20151215&stat=1&order=D&period=d
      */
     private static final String stockDataUrlTemplate = "http://q.stock.sohu.com/hisHq?code={0}&start={1}&end={2}&stat=1&order=D&period=d";
 

@@ -46,7 +46,7 @@ public class PriceFilter implements FoolStockFilter {
                 advice.appendMessage(String.format("价格%f低于9（活力不足）.", closePrice));
             } else {
                 advice.riseRisk(StockAdvice.Risk.High);
-                advice.appendMessage(String.format("价格%f低于9（活力不足）.", closePrice));
+                advice.appendMessage(String.format("价格%f高于30（成本太大）.", closePrice));
             }
         }
         return foolAdvice;
